@@ -102,7 +102,6 @@
   urlcolor=linkColor,
   breaklinks=true,
 }
-
 % \reversemarginpar%
 
 \begin{document}
@@ -143,139 +142,188 @@
 
 \section{Introduction}
 
+In a previous paper (??) we took showed how object tracking could be used to classify participants' behaviour.  We termed this approach ABC: Automated Behavioural Coding.  Such an approach reduces the need for manual coding of behaviours in videos.  
 
-This format is to be used for submissions that are published in the
-conference publications. We wish to give this volume a consistent,
-high-quality appearance. We therefore ask that authors follow some
-simple guidelines. In essence, you should format your paper exactly
-like this document. The easiest way to do this is to replace the
-content with your own material.
 
-\section{ACM Copyrights \& Permission}
-Accepted extended abstracts and papers will be distributed in the
-Conference Publications. They will also be placed in the ACM Digital
-Library, where they will remain accessible to thousands of researchers
-and practitioners worldwide. To view the ACM's copyright and
-permissions policy, see:
-\url{http://www.acm.org/publications/policies/copyright_policy}.
+\section{Methods}
 
-\marginpar{%
-  \vspace{-45pt} \fbox{%
-    \begin{minipage}{0.925\marginparwidth}
-      \textbf{Good Utilization of the Side Bar} \\
-      \vspace{1pc} \textbf{Preparation:} Do not change the margin
-      dimensions and do not flow the margin text to the
-      next page. \\
-      \vspace{1pc} \textbf{Materials:} The margin box must not intrude
-      or overflow into the header or the footer, or the gutter space
-      between the margin paragraph and the main left column. The text
-      in this text box should remain the same size as the body
-      text. Use the \texttt{{\textbackslash}vspace{}} command to set
-      the margin
-      note's position. \\
-      \vspace{1pc} \textbf{Images \& Figures:} Practically anything
-      can be put in the margin if it fits. Use the
-      \texttt{{\textbackslash}marginparwidth} constant to set the
-      width of the figure, table, minipage, or whatever you are trying
-      to fit in this skinny space.
-    \end{minipage}}\label{sec:sidebar} }
+30 participants took part in a ``spot the difference'' experiment.  Each participant was given a tablet, positioned in front of a TV screen.   Their task was to spot the differences between a series of images shown simulaneously on the tablet and TV screen.  We captured front, side and top-down video, as shown in Figure \ref{fig:setup} using xxxx webcams at 30fps.  We also positioned Microsoft Kinects in front of, and to the side of the participant.  All video sources recorded at 30 frames per second. Participants also wore  movement sensors (Metawear\ldots) on each wrist, which captured acceleration and xxx at 25 fps.     
 
-\section{Page Size}
-All SIGCHI submissions should be US letter (8.5 $\times$ 11
-inches). US Letter is the standard option used by this \LaTeX\
-template.
+\begin{marginfigure}%[-35pc]
+  \begin{minipage}{\marginparwidth}
+    \centering
+    \includegraphics[width=0.9\marginparwidth]{figures/ExperimentSetup}
+	  \caption{The experiment setup.  Only video from the front-facing (top left) camera was used in our analysis.\label{fig:setup}}
+  \end{minipage}
+\end{marginfigure}
 
-\section{Text Formatting}
-Please use an 8.5-point Verdana font, or other sans serifs font as
-close as possible in appearance to Verdana in which these guidelines
-have been set. Arial 9-point font is a reasonable substitute for
-Verdana as it has a similar x-height. Please use serif or
-non-proportional fonts only for special purposes, such as
-distinguishing \texttt{source code} text.
+\textit{We need a paragaph here on how the experiment worked - what happened in the training, part1 and part2 of it. How long each part of the experiment lastedetc.  This could be good to put in graphical timeline in the side bar??}
 
-\subsubsection{Text styles}
-The \LaTeX\ template facilitates text formatting for normal (for body
-text); heading 1, heading 2, heading 3; bullet list; numbered list;
-caption; annotation (for notes in the narrow left margin); and
-references (for bibliographic entries). Additionally, here is an
-example of footnoted\footnote{Use footnotes sparingly, if at all.}
-text. As stated in the footnote, footnotes should rarely be used.
 
-\begin{figure}
-  \includegraphics[width=0.9\columnwidth]{figures/sigchi-logo}
-  \caption{Insert a caption below each figure.}~\label{fig:sample}
-\end{figure}
+For 18 of the participants, the webcam video was manually encoded \textit{using some sotware??}, to produce a ground-truth for each participant.  Participants' attention towards the tablet, TV and elsewhere was recorded. We recorded the start and end times of the transition between states \textbf{I think it would be worth looking at these in more detail actually - encode ``transition'' as a separate state}. We (initially(?)) encoded frames before the mid-point of each transition period to the original state, and the remaining frames to the new state.
 
-\subsection{Language, style, and content}
-The written and spoken language of SIGCHI is English. Spelling and
-punctuation may use any dialect of English (e.g., British, Canadian,
-US, etc.) provided this is done consistently. Hyphenation is
-optional. To ensure suitability for an international audience, please
-pay attention to the following:
+We developed a bespoke tool to extract each frame of the colour video stream recorded by the Kinect in an eXtended Event File.  Occasional frames had been dropped by the Kinect when recording.  Since the ground truth behaviours were recorded against the webcam time, we mapped "Kinect times" to "webcam times" where required.
 
-\begin{table}
-  \centering
-  \begin{tabular}{l r r r}
-    % \toprule
-    & & \multicolumn{2}{c}{\small{\textbf{Test Conditions}}} \\
-    \cmidrule(r){3-4}
-    {\small\textit{Name}}
-    & {\small \textit{First}}
-      & {\small \textit{Second}}
-    & {\small \textit{Final}} \\
-    \midrule
-    Marsden & 223.0 & 44 & 432,321 \\
-    Nass & 22.2 & 16 & 234,333 \\
-    Borriello & 22.9 & 11 & 93,123 \\
-    Karat & 34.9 & 2200 & 103,322 \\
-    % \bottomrule
-  \end{tabular}
-  \caption{Table captions should be placed below the table. We
-    recommend table lines be 1 point, 25\% black. Minimize use of
-    table grid lines.}~\label{tab:table1}
-\end{table}
+We took video from the front-facing camera (recorded at 544x418 resolution), and Kinect video (recorded at 1920x1080 resolution), and applied object tracking and face detection algorithms to both.   We used \texttt{OpenFace} (??) (https://github.com/TadasBaltrusaitis/OpenFace) to track facial position, gaze and pose.  We ran \texttt{OpenFace} on the whole video for each participant, and then extracted the tracking data corresponding to each part of the experiment.  In common with our previous work, we used \texttt{CppMT} to perform object tracking on the video of each participant.  We had previously found that that object bounding box was prone to ``drift''; particularly if the participant's face became obscured (for example, by turning away from the camera).  For this reason, we (re)set the bounding box at the start of each part of the experiment.
 
-\begin{itemize}\compresslist%
-\item Write in a straightforward style. Use simple sentence
-  structure. Try to avoid long sentences and complex sentence
-  structures. Use semicolons carefully.
-\item Use common and basic vocabulary (e.g., use the word ``unusual''
-  rather than the word ``arcane'').
-\item Briefly define or explain all technical terms. The terminology
-  common to your practice/discipline may be different in other design
-  practices/disciplines.
-\item Spell out all acronyms the first time they are used in your
-  text. For example, ``World Wide Web (WWW)''.
-\item Explain local references (e.g., not everyone knows all city
-  names in a particular country).
-\item Explain ``insider'' comments. Ensure that your whole audience
-  understands any reference whose meaning you do not describe (e.g.,
-  do not assume that everyone has used a Macintosh or a particular
-  application).
-\item Explain colloquial language and puns. Understanding phrases like
-  ``red herring'' requires a cultural knowledge of English. Humor and
-  irony are difficult to translate.
-\item Use unambiguous forms for culturally localized concepts, such as
-  times, dates, currencies, and numbers (e.g., ``1-5- 97'' or
-  ``5/1/97'' may mean 5 January or 1 May, and ``seven o'clock'' may
-  mean 7:00 am or 19:00). For currencies, indicate equivalences:
-  ``Participants were paid {\fontfamily{txr}\selectfont \textwon}
-  25,000, or roughly US \$22.''
-\item Be careful with the use of gender-specific pronouns (he, she)
-  and other gender-specific words (chairman, manpower,
-  man-months). Use inclusive language (e.g., she or he, they, chair,
-  staff, staff-hours, person-years) that is gender-neutral. If
-  necessary, you may be able to use ``he'' and ``she'' in alternating
-  sentences, so that the two genders occur equally
-  often~\cite{Schwartz:1995:GBF}.
-\item If possible, use the full (extended) alphabetic character set
-  for names of persons, institutions, and places (e.g.,
-  Gr{\o}nb{\ae}k, Lafreni\'ere, S\'anchez, Nguy{\~{\^{e}}}n,
-  Universit{\"a}t, Wei{\ss}enbach, Z{\"u}llighoven, \r{A}rhus, etc.).
-  These characters are already included in most versions and variants
-  of Times, Helvetica, and Arial fonts.
-\end{itemize}
 
+We analysed parts 1 and 2 of the experiment separately.  We hypothesised that part 2 would prove more challenging for our approach; reviewing the videos we noted that participants would change the position of the tablet, and in some cases partially obscured their face with the tablet.
+
+We developed a Python program to perform the classification process.  This could operate in a non-interactive mode, where an external ground truth file was used to train and evaluate the classifier.  When used in interactive mode, the user was presented with each frame in the video, which they could then classify to a numeric state.  An ``undo'' feature was provided.  We also allowed the user to review the frames at $\pm 3$ from the frame being classified.  We added this feature since it was sometimes difficult to determine the participant's behaviour if they were moving rapidly.  
+
+\subsection{Evaluation of the classifier}
+When the classifier is operating in non-interactive mode, we have a ground-truth state for each frame, which we can use to evaluate the classifier's performance.  When using the classifier ``for real'', in interactive mode, such data will not, in general be available.  To evaluate the classifier in this case, we use a shuffle split cross validation approach to assess the classifier's accuracy. \textit{This is only appropriate if we're classifying frames at random - otherwise your'e jut overfitting}.
+
+The \texttt{DecisionTreeClassifier} in \texttt{sklearn} was used with its default parameters to classify the behaviour in each state.   We allowed all features identified by the tracking or facial recognition algorithm as possible covariates (with the exception of facial action units in the OpenFace data) in the decision tree.  \textit{We might want to say something about the risk of over-fitting here, and/or look at how similar/different the participants' trees are.} Two different approaches were used to train the classifier:
+
+\begin{enumerate}\compresslist
+	\item Sequential training frames; $t \in \{15,30,60\}$ seconds
+	\item Random training frames; $f \in \{20, 40, 80, 160, 320\}$ frames
+\end{enumerate}
+
+\textit{We should probably choose values such that there's an overlap between the sets - allow a direct comparison}.  
+
+When training sequentially we used the ground truth data for the first $t$ seconds of each part of the experiment.  
+
+\section{Results}
+
+
+
+\section{Discussion \& Further Work}
+\textit{This needs re-writing in a more computer science-y way}
+We have shown that selecting training frames at random dramatically improves the performance of our approach.  When training the classifier with sequentially, the position of each feature is, in general, closely correlated with the previous frame.  As such each additional frame gives us relatively little new information.  Furthermore, the classifier is unlikely to be robust to changes in the participant's behaviour over the course of the experiment (for example if they change the position of the tablet) \textit{It would be interesting to see whether we get more complex (i.e.\ flexible/adaptable) decision trees with the random classifier}.  In contrast, by selecting training frames at random we will capture a representative sample of each participant's behaviour over the course of the experiment.
+
+Although it was straightforward to classify the majority of frames when working in interactive mode, frames where the participant was transitioning between states were sometimes difficult to classify.  We plan to do further work exploring how best to handle these frames; whether it is better to treat ``transition between states'' as a separate state, or whether we should consistently include transition states in one or other of the states.  
+
+We also plan to investigate whether including the accelerometer and gyroscope data in the classification tree improves prediction accuracy.   The Kinect data includes depth data.  It is, however, unclear how we might best reduce this to a form suitable for use in a decision tree classifier.  
+
+Both methods of extracting scene features from the video frames gave an accuracy that was, on average, similar accross all participants.  This masks some marked differences in performance for individual participants.  \texttt{OpenFace} is less general; it only detects faces, but has the advantage that it operates completelly automatically, whereas a user specified bounding box is required for \texttt{CppMT}.  Given that the process of extracting features is distinct from the classification process there is little to be lost in using multiple feature extraction methods.  
+
+%\section{ACM Copyrights \& Permission}
+%Accepted extended abstracts and papers will be distributed in the
+%Conference Publications. They will also be placed in the ACM Digital
+%Library, where they will remain accessible to thousands of researchers
+%and practitioners worldwide. To view the ACM's copyright and
+%permissions policy, see:
+%\url{http://www.acm.org/publications/policies/copyright_policy}.
+%
+%\marginpar{
+%  \vspace{-45pt} \fbox{
+%    \begin{minipage}{0.925\marginparwidth}
+%      \textbf{Good Utilization of the Side Bar} \\
+%      \vspace{1pc} \textbf{Preparation:} Do not change the margin
+%      dimensions and do not flow the margin text to the
+%      next page. \\
+%      \vspace{1pc} \textbf{Materials:} The margin box must not intrude
+%      or overflow into the header or the footer, or the gutter space
+%      between the margin paragraph and the main left column. The text
+%      in this text box should remain the same size as the body
+%      text. Use the \texttt{{\textbackslash}vspace{}} command to set
+%      the margin
+%      note's position. \\
+%      \vspace{1pc} \textbf{Images \& Figures:} Practically anything
+%      can be put in the margin if it fits. Use the
+%      \texttt{{\textbackslash}marginparwidth} constant to set the
+%      width of the figure, table, minipage, or whatever you are trying
+%      to fit in this skinny space.
+%    \end{minipage}}\label{sec:sidebar} }
+%
+%\section{Page Size}
+%All SIGCHI submissions should be US letter (8.5 $\times$ 11
+%inches). US Letter is the standard option used by this \LaTeX\
+%template.
+%
+%\section{Text Formatting}
+%Please use an 8.5-point Verdana font, or other sans serifs font as
+%close as possible in appearance to Verdana in which these guidelines
+%have been set. Arial 9-point font is a reasonable substitute for
+%Verdana as it has a similar x-height. Please use serif or
+%non-proportional fonts only for special purposes, such as
+%distinguishing \texttt{source code} text.
+%
+%\subsubsection{Text styles}
+%The \LaTeX\ template facilitates text formatting for normal (for body
+%text); heading 1, heading 2, heading 3; bullet list; numbered list;
+%caption; annotation (for notes in the narrow left margin); and
+%references (for bibliographic entries). Additionally, here is an
+%example of footnoted\footnote{Use footnotes sparingly, if at all.}
+%text. As stated in the footnote, footnotes should rarely be used.
+%
+%\begin{figure}
+%  \includegraphics[width=0.9\columnwidth]{figures/sigchi-logo}
+%  \caption{Insert a caption below each figure.}~\label{fig:sample}
+%\end{figure}
+%
+%\subsection{Language, style, and content}
+%The written and spoken language of SIGCHI is English. Spelling and
+%punctuation may use any dialect of English (e.g., British, Canadian,
+%US, etc.) provided this is done consistently. Hyphenation is
+%optional. To ensure suitability for an international audience, please
+%pay attention to the following:
+%
+%\begin{table}
+%  \centering
+%  \begin{tabular}{l r r r}
+%    % \toprule
+%    & & \multicolumn{2}{c}{\small{\textbf{Test Conditions}}} \\
+%    \cmidrule(r){3-4}
+%    {\small\textit{Name}}
+%    & {\small \textit{First}}
+%      & {\small \textit{Second}}
+%    & {\small \textit{Final}} \\
+%    \midrule
+%    Marsden & 223.0 & 44 & 432,321 \\
+%    Nass & 22.2 & 16 & 234,333 \\
+%    Borriello & 22.9 & 11 & 93,123 \\
+%    Karat & 34.9 & 2200 & 103,322 \\
+%    % \bottomrule
+%  \end{tabular}
+%  \caption{Table captions should be placed below the table. We
+%    recommend table lines be 1 point, 25\% black. Minimize use of
+%    table grid lines.}~\label{tab:table1}
+%\end{table}
+%
+%\begin{itemize}\compresslist%
+%\item Write in a straightforward style. Use simple sentence
+%  structure. Try to avoid long sentences and complex sentence
+%  structures. Use semicolons carefully.
+%\item Use common and basic vocabulary (e.g., use the word ``unusual''
+%  rather than the word ``arcane'').
+%\item Briefly define or explain all technical terms. The terminology
+%  common to your practice/discipline may be different in other design
+%  practices/disciplines.
+%\item Spell out all acronyms the first time they are used in your
+%  text. For example, ``World Wide Web (WWW)''.
+%\item Explain local references (e.g., not everyone knows all city
+%  names in a particular country).
+%\item Explain ``insider'' comments. Ensure that your whole audience
+%  understands any reference whose meaning you do not describe (e.g.,
+%  do not assume that everyone has used a Macintosh or a particular
+%  application).
+%\item Explain colloquial language and puns. Understanding phrases like
+%  ``red herring'' requires a cultural knowledge of English. Humor and
+%  irony are difficult to translate.
+%\item Use unambiguous forms for culturally localized concepts, such as
+%  times, dates, currencies, and numbers (e.g., ``1-5- 97'' or
+%  ``5/1/97'' may mean 5 January or 1 May, and ``seven o'clock'' may
+%  mean 7:00 am or 19:00). For currencies, indicate equivalences:
+%  ``Participants were paid {\fontfamily{txr}\selectfont \textwon}
+%  25,000, or roughly US \$22.''
+%\item Be careful with the use of gender-specific pronouns (he, she)
+%  and other gender-specific words (chairman, manpower,
+%  man-months). Use inclusive language (e.g., she or he, they, chair,
+%  staff, staff-hours, person-years) that is gender-neutral. If
+%  necessary, you may be able to use ``he'' and ``she'' in alternating
+%  sentences, so that the two genders occur equally
+%  often~\cite{Schwartz:1995:GBF}.
+%\item If possible, use the full (extended) alphabetic character set
+%  for names of persons, institutions, and places (e.g.,
+%  Gr{\o}nb{\ae}k, Lafreni\'ere, S\'anchez, Nguy{\~{\^{e}}}n,
+%  Universit{\"a}t, Wei{\ss}enbach, Z{\"u}llighoven, \r{A}rhus, etc.).
+%  These characters are already included in most versions and variants
+%  of Times, Helvetica, and Arial fonts.
+%\end{itemize}
+%
 % \begin{figure}
 %   \includegraphics[width=.9\columnwidth]{figures/ea-figure2}
 %   \caption{If your figure has a light background, you can set its
@@ -283,159 +331,159 @@ pay attention to the following:
 %     it.}\label{fig:bats}
 % \end{figure}
 
-\begin{marginfigure}[-35pc]
-  \begin{minipage}{\marginparwidth}
-    \centering
-    \includegraphics[width=0.9\marginparwidth]{figures/cats}
-    \caption{In this image, the cats are tessellated within a square
-      frame. Images should also have captions and be within the
-      boundaries of the sidebar on page~\pageref{sec:sidebar}. Photo:
-      \cczero~jofish on Flickr.}~\label{fig:marginfig}
-  \end{minipage}
-\end{marginfigure}
-
-\section{Figures}
-The examples on this and following pages should help you get a feel
-for how screen-shots and other figures should be placed in the
-template. Your document may use color figures (see
-Figures~\ref{fig:sample}), which are included in the page limit; the
-figures must be usable when printed in black and white. You can use
-the \texttt{\marginpar} command to insert figures in the (left) margin
-of the document (see Figure~\ref{fig:marginfig}). Finally, be sure to
-make images large enough so the important details are legible and
-clear (see Figure~\ref{fig:cats}).
-
-\section{Tables}
-You man use tables inline with the text (see Table~\ref{tab:table1})
-or within the margin as shown in Table~\ref{tab:table2}. Try to
-minimize the use of lines (especially vertical lines). \LaTeX\ will
-set the table font and captions sizes correctly; the latter must
-remain unchanged.
-
-\section{Accessibility}
-The Executive Council of SIGCHI has committed to making SIGCHI
-conferences more inclusive for researchers, practitioners, and
-educators with disabilities. As a part of this goal, the all authors
-are asked to work on improving the accessibility of their
-submissions. Specifically, we encourage authors to carry out the
-following five steps:
-\begin{itemize}\compresslist%
-\item Add alternative text to all figures
-\item Mark table headings
-\item Generate a tagged PDF
-\item Verify the default language
-\item Set the tab order to ``Use Document Structure''
-\end{itemize}
-
-For links to instructions and resources, please see:
-\url{http://chi2016.acm.org/accessibility}
-
-Unfortunately good tools do not yet exist to create tagged PDF files
-from Latex. \LaTeX\ users will need to carry out all of the above
-steps in the PDF directly using Adobe Acrobat, after the PDF has been
-generated.
-
-For more information and links to instructions and resources, please
-see:
-\url{http://chi2016.acm.org/accessibility}.
-
-\begin{figure*}
-  \centering
-  \includegraphics[width=1.3\columnwidth]{figures/map}
-  \caption{In this image, the map maximizes use of space. You can make
-    figures as wide as you need, up to a maximum of the full width of
-    both columns. Note that \LaTeX\ tends to render large figures on a
-    dedicated page. Image: \ccbynd~ayman on Flickr.}~\label{fig:cats}
-\end{figure*}
-
-\section{Producing and Testing PDF Files}
-We recommend that you produce a PDF version of your submission well
-before the final deadline. Your PDF file must be ACM DL Compliant and
-meet stated requirements,
-\url{http://www.sheridanprinting.com/sigchi/ACM-SIG-distilling-settings.htm}.
-
-\marginpar{\vspace{-23pc}So long as you don't type outside the right
-  margin or bleed into the gutter, it's okay to put annotations over
-  here on the left, too; this annotation is near Hawaii. You'll have
-  to manually align the margin paragraphs to your \LaTeX\ floats using
-  the \texttt{{\textbackslash}vspace{}} command.}
-
-\begin{margintable}[1pc]
-  \begin{minipage}{\marginparwidth}
-    \centering
-    \begin{tabular}{r r l}
-      & {\small \textbf{First}}
-      & {\small \textbf{Location}} \\
-      \toprule
-      Child & 22.5 & Melbourne \\
-      Adult & 22.0 & Bogot\'a \\
-      \midrule
-      Gene & 22.0 & Palo Alto \\
-      John & 34.5 & Minneapolis \\
-      \bottomrule
-    \end{tabular}
-    \caption{A simple narrow table in the left margin
-      space.}~\label{tab:table2}
-  \end{minipage}
-\end{margintable}
-Test your PDF file by viewing or printing it with the same software we
-will use when we receive it, Adobe Acrobat Reader Version 10. This is
-widely available at no cost. Note that most
-reviewers will use a North American/European version of Acrobat
-reader, so please check your PDF accordingly.
-
-\section{Acknowledgements}
-We thank all the volunteers, publications support, staff, and authors
-who wrote and provided helpful comments on previous versions of this
-document. As well authors 1, 2, and 3 gratefully acknowledge the grant
-from NSF (\#1234--2222--ABC). Author 4 for example may want to
-acknowledge a supervisor/manager from their original employer. This
-whole paragraph is just for example. Some of the references cited in
-this paper are included for illustrative purposes only.
-
-\section{References Format}
-Your references should be published materials accessible to the
-public. Internal technical reports may be cited only if they are
-easily accessible and may be obtained by any reader for a nominal
-fee. Proprietary information may not be cited. Private communications
-should be acknowledged in the main text, not referenced (e.g.,
-[Golovchinsky, personal communication]). References must be the same
-font size as other body text. References should be in alphabetical
-order by last name of first author. Use a numbered list of references
-at the end of the article, ordered alphabetically by last name of
-first author, and referenced by numbers in brackets. For papers from
-conference proceedings, include the title of the paper and the name of
-the conference. Do not include the location of the conference or the
-exact date; do include the page numbers if available. 
-
-References should be in ACM citation format:
-\url{http://www.acm.org/publications/submissions/latex_style}.  This
-includes citations to Internet
-resources~\cite{CHINOSAUR:venue,cavender:writing,psy:gangnam}
-according to ACM format, although it is often appropriate to include
-URLs directly in the text, as above. Example reference formatting for
-individual journal articles~\cite{ethics}, articles in conference
-proceedings~\cite{Klemmer:2002:WSC:503376.503378},
-books~\cite{Schwartz:1995:GBF}, theses~\cite{sutherland:sketchpad},
-book chapters~\cite{winner:politics}, an entire journal
-issue~\cite{kaye:puc},
-websites~\cite{acm_categories,cavender:writing},
-tweets~\cite{CHINOSAUR:venue}, patents~\cite{heilig:sensorama}, 
-games~\cite{supermetroid:snes}, and
-online videos~\cite{psy:gangnam} is given here.  See the examples of
-citations at the end of this document and in the accompanying
-\texttt{BibTeX} document. This formatting is a edited version of the
-format automatically generated by the ACM Digital Library
-(\url{http://dl.acm.org}) as ``ACM Ref''. DOI and/or URL links are
-optional but encouraged as are full first names. Note that the
-Hyperlink style used throughout this document uses blue links;
-however, URLs in the references section may optionally appear in
-black.
+%\begin{marginfigure}[-35pc]
+%  \begin{minipage}{\marginparwidth}
+%    \centering
+%    \includegraphics[width=0.9\marginparwidth]{figures/cats}
+%    \caption{In this image, the cats are tessellated within a square
+%      frame. Images should also have captions and be within the
+%      boundaries of the sidebar on page~\pageref{sec:sidebar}. Photo:
+%      \cczero~jofish on Flickr.}~\label{fig:marginfig}
+%  \end{minipage}
+%\end{marginfigure}
+%
+%\section{Figures}
+%The examples on this and following pages should help you get a feel
+%for how screen-shots and other figures should be placed in the
+%template. Your document may use color figures (see
+%Figures~\ref{fig:sample}), which are included in the page limit; the
+%figures must be usable when printed in black and white. You can use
+%the \texttt{\marginpar} command to insert figures in the (left) margin
+%of the document (see Figure~\ref{fig:marginfig}). Finally, be sure to
+%make images large enough so the important details are legible and
+%clear (see Figure~\ref{fig:cats}).
+%
+%\section{Tables}
+%You man use tables inline with the text (see Table~\ref{tab:table1})
+%or within the margin as shown in Table~\ref{tab:table2}. Try to
+%minimize the use of lines (especially vertical lines). \LaTeX\ will
+%set the table font and captions sizes correctly; the latter must
+%remain unchanged.
+%
+%\section{Accessibility}
+%The Executive Council of SIGCHI has committed to making SIGCHI
+%conferences more inclusive for researchers, practitioners, and
+%educators with disabilities. As a part of this goal, the all authors
+%are asked to work on improving the accessibility of their
+%submissions. Specifically, we encourage authors to carry out the
+%following five steps:
+%\begin{itemize}\compresslist%
+%\item Add alternative text to all figures
+%\item Mark table headings
+%\item Generate a tagged PDF
+%\item Verify the default language
+%\item Set the tab order to ``Use Document Structure''
+%\end{itemize}
+%
+%For links to instructions and resources, please see:
+%\url{http://chi2016.acm.org/accessibility}
+%
+%Unfortunately good tools do not yet exist to create tagged PDF files
+%from Latex. \LaTeX\ users will need to carry out all of the above
+%steps in the PDF directly using Adobe Acrobat, after the PDF has been
+%generated.
+%
+%For more information and links to instructions and resources, please
+%see:
+%\url{http://chi2016.acm.org/accessibility}.
+%
+%\begin{figure*}
+%  \centering
+%  \includegraphics[width=1.3\columnwidth]{figures/map}
+%  \caption{In this image, the map maximizes use of space. You can make
+%    figures as wide as you need, up to a maximum of the full width of
+%    both columns. Note that \LaTeX\ tends to render large figures on a
+%    dedicated page. Image: \ccbynd~ayman on Flickr.}~\label{fig:cats}
+%\end{figure*}
+%
+%\section{Producing and Testing PDF Files}
+%We recommend that you produce a PDF version of your submission well
+%before the final deadline. Your PDF file must be ACM DL Compliant and
+%meet stated requirements,
+%\url{http://www.sheridanprinting.com/sigchi/ACM-SIG-distilling-settings.htm}.
+%
+%\marginpar{\vspace{-23pc}So long as you don't type outside the right
+%  margin or bleed into the gutter, it's okay to put annotations over
+%  here on the left, too; this annotation is near Hawaii. You'll have
+%  to manually align the margin paragraphs to your \LaTeX\ floats using
+%  the \texttt{{\textbackslash}vspace{}} command.}
+%
+%\begin{margintable}[1pc]
+%  \begin{minipage}{\marginparwidth}
+%    \centering
+%    \begin{tabular}{r r l}
+%      & {\small \textbf{First}}
+%      & {\small \textbf{Location}} \\
+%      \toprule
+%      Child & 22.5 & Melbourne \\
+%      Adult & 22.0 & Bogot\'a \\
+%      \midrule
+%      Gene & 22.0 & Palo Alto \\
+%      John & 34.5 & Minneapolis \\
+%      \bottomrule
+%    \end{tabular}
+%    \caption{A simple narrow table in the left margin
+%      space.}~\label{tab:table2}
+%  \end{minipage}
+%\end{margintable}
+%Test your PDF file by viewing or printing it with the same software we
+%will use when we receive it, Adobe Acrobat Reader Version 10. This is
+%widely available at no cost. Note that most
+%reviewers will use a North American/European version of Acrobat
+%reader, so please check your PDF accordingly.
+%
+%\section{Acknowledgements}
+%We thank all the volunteers, publications support, staff, and authors
+%who wrote and provided helpful comments on previous versions of this
+%document. As well authors 1, 2, and 3 gratefully acknowledge the grant
+%from NSF (\#1234--2222--ABC). Author 4 for example may want to
+%acknowledge a supervisor/manager from their original employer. This
+%whole paragraph is just for example. Some of the references cited in
+%this paper are included for illustrative purposes only.
+%
+%\section{References Format}
+%Your references should be published materials accessible to the
+%public. Internal technical reports may be cited only if they are
+%easily accessible and may be obtained by any reader for a nominal
+%fee. Proprietary information may not be cited. Private communications
+%should be acknowledged in the main text, not referenced (e.g.,
+%[Golovchinsky, personal communication]). References must be the same
+%font size as other body text. References should be in alphabetical
+%order by last name of first author. Use a numbered list of references
+%at the end of the article, ordered alphabetically by last name of
+%first author, and referenced by numbers in brackets. For papers from
+%conference proceedings, include the title of the paper and the name of
+%the conference. Do not include the location of the conference or the
+%exact date; do include the page numbers if available. 
+%
+%References should be in ACM citation format:
+%\url{http://www.acm.org/publications/submissions/latex_style}.  This
+%includes citations to Internet
+%resources~\cite{CHINOSAUR:venue,cavender:writing,psy:gangnam}
+%according to ACM format, although it is often appropriate to include
+%URLs directly in the text, as above. Example reference formatting for
+%individual journal articles~\cite{ethics}, articles in conference
+%proceedings~\cite{Klemmer:2002:WSC:503376.503378},
+%books~\cite{Schwartz:1995:GBF}, theses~\cite{sutherland:sketchpad},
+%book chapters~\cite{winner:politics}, an entire journal
+%issue~\cite{kaye:puc},
+%websites~\cite{acm_categories,cavender:writing},
+%tweets~\cite{CHINOSAUR:venue}, patents~\cite{heilig:sensorama}, 
+%games~\cite{supermetroid:snes}, and
+%online videos~\cite{psy:gangnam} is given here.  See the examples of
+%citations at the end of this document and in the accompanying
+%\texttt{BibTeX} document. This formatting is a edited version of the
+%format automatically generated by the ACM Digital Library
+%(\url{http://dl.acm.org}) as ``ACM Ref''. DOI and/or URL links are
+%optional but encouraged as are full first names. Note that the
+%Hyperlink style used throughout this document uses blue links;
+%however, URLs in the references section may optionally appear in
+%black.
 
 \balance{} 
 
-\bibliographystyle{SIGCHI-Reference-Format}
-\bibliography{sample}
+%\bibliographystyle{SIGCHI-Reference-Format}
+%\bibliography{sample}
 
 \end{document}
 
