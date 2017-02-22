@@ -1,0 +1,14 @@
+*~
+*.aux
+*.log
+*.out
+*.bak
+*.pdf
+*.dvi
+figures/cats.png
+figures/map.png
+figures/sigchi-logo.png
+extended-abstract.tex
+sample.bib
+
+
