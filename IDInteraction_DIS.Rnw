@@ -188,8 +188,6 @@ When training sequentially we used the ground truth data for the first $t$ secon
 
 \section{Results}
 
-
-
 \section{Discussion \& Further Work}
 \textit{This needs re-writing in a more computer science-y way}
 We have shown that selecting training frames at random dramatically improves the performance of our approach.  When training the classifier with sequentially, the position of each feature is, in general, closely correlated with the previous frame.  As such each additional frame gives us relatively little new information.  Furthermore, the classifier is unlikely to be robust to changes in the participant's behaviour over the course of the experiment (for example if they change the position of the tablet) \textit{It would be interesting to see whether we get more complex (i.e.\ flexible/adaptable) decision trees with the random classifier}.  In contrast, by selecting training frames at random we will capture a representative sample of each participant's behaviour over the course of the experiment.
