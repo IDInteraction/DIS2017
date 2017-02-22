@@ -105,7 +105,7 @@
 % \reversemarginpar%
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+%\SweaveOpts{concordance=TRUE}
 
 %% For the camera ready, use the commands provided by the ACM in the Permission Release Form.
 %\CopyrightYear{2007}
@@ -144,11 +144,33 @@
 \section{Introduction}
 
 In a previous paper (??) we took showed how object tracking could be used to classify participants' behaviour.  We termed this approach ABC: Automated Behavioural Coding.  Such an approach reduces the need for manual coding of behaviours in videos.  
+<<setup>>=
+
+library(dplyr)
+@
+
+<<numparts, engine='bash', echo = FALSE>>=
+find ./part1GroundTruth/P??checkGTwebcam2.csv.gz -printf "%f\n" | cut -c1-3 > participantcodes.csv
+
+@
+
+<<echo = FALSE>>=
+participantCode <- read.csv("participantcodes.csv", header = FALSE, stringsAsFactors = FALSE, 
+                            col.names = "participantCode") 
+numparticipants <- nrow(participantCode)
+#unlink("participantcodes.csv")
+@
+
+
+<<usefulvalues, echo = FALSE>>=
+fps <- 30
+
+@
 
 
 \section{Methods}
 
-30 participants took part in a ``spot the difference'' experiment.  Each participant was given a tablet, positioned in front of a TV screen.   Their task was to spot the differences between a series of images shown simultaneously on the tablet and TV screen.  We captured front, side and top-down video, as shown in Figure \ref{fig:setup} using xxxx web-cams at 30fps.  We also positioned Microsoft Kinects in front of, and to the side of the participant.  All video sources recorded at 30 frames per second. Participants also wore  movement sensors (Metawear\ldots) on each wrist, which captured acceleration and xxx at 25 fps.     
+30 participants took part in a ``spot the difference'' experiment.  Each participant was given a tablet, positioned in front of a TV screen.   Their task was to spot the differences between a series of images shown simultaneously on the tablet and TV screen.  We captured front, side and top-down video, as shown in Figure \ref{fig:setup}.   We also positioned Microsoft Kinects in front of, and to the side of the participant.  All video sources recorded at \Sexpr{fps} frames per second. Participants also wore  movement sensors (Metawear\ldots) on each wrist, which captured acceleration and angular rotation rates at $\sim 25$ fps.
 
 \begin{marginfigure}%[-35pc]
   \begin{minipage}{\marginparwidth}
@@ -161,51 +183,115 @@ In a previous paper (??) we took showed how object tracking could be used to cla
 \textit{We need a paragraph here on how the experiment worked - what happened in the training, part1 and part2 of it. How long each part of the experiment lasted.  This could be good to put in graphical time-line in the side bar??}
 
 
-For 18 of the participants, the web-cam video was manually encoded \textit{using some software??}, to produce a ground-truth for each participant.  Participants' attention towards the tablet, TV and elsewhere was recorded. We recorded the start and end times of the transition between states \textbf{I think it would be worth looking at these in more detail actually - encode ``transition'' as a separate state}. We (initially(?)) encoded frames before the mid-point of each transition period to the original state, and the remaining frames to the new state.
+For \Sexpr{numparticipants} of the participants\footnote{Work to encode the remaining participants is ongoing.}, the web-cam video was manually encoded \textit{using some software??}, to produce a ground-truth for each participant.  Participants' attention towards the tablet, TV and elsewhere was recorded (we combined the last two states in this analysis to consider only ``tablet'' and ``not tablet'' as possible behaviours. We recorded the start and end times of the transition between states. We encoded frames before the mid-point of each transition period to the original state, and the remaining frames to the new state.
 
-We developed a bespoke tool to extract each frame of the colour video stream recorded by the Kinect in an eXtended Event File.  Occasional frames had been dropped by the Kinect when recording.  Since the ground truth behaviours were recorded against the web-cam time, we mapped "Kinect times" to "web-cam times" where required.
+%We developed a bespoke tool to extract each frame of the colour video stream recorded by the Kinect in an eXtended Event File.  Occasional frames had been dropped by the Kinect when recording.  Since the ground truth behaviours were recorded against the web-cam time, we mapped "Kinect times" to "web-cam times" where required.
 
-We took video from the front-facing camera (recorded at 544x418 resolution), and Kinect video (recorded at 1920x1080 resolution), and applied object tracking and face detection algorithms to both.   We used \texttt{OpenFace} (??) (https://github.com/TadasBaltrusaitis/OpenFace) to track facial position, gaze and pose.  We ran \texttt{OpenFace} on the whole video for each participant, and then extracted the tracking data corresponding to each part of the experiment.  In common with our previous work, we used \texttt{CppMT} to perform object tracking on the video of each participant.  We had previously found that that object bounding box was prone to ``drift''; particularly if the participant's face became obscured (for example, by turning away from the camera).  For this reason, we (re)set the bounding box at the start of each part of the experiment.
-
+We took video from the front-facing camera (recorded at 544x418 resolution)
+%, and Kinect video (recorded at 1920x1080 resolution), 
+and applied object tracking and face detection algorithms to both.   We used \texttt{OpenFace} (??) (https://github.com/TadasBaltrusaitis/OpenFace) to track facial position, gaze and pose.  We ran \texttt{OpenFace} on the whole video for each participant, and then extracted the tracking data corresponding to each part of the experiment.  In common with our previous work, we used \texttt{CppMT} to perform object tracking on the video of each participant.  We had previously found that that object bounding box was prone to ``drift''; particularly if the participant's face became obscured (for example, by turning away from the camera).  For this reason, we (re)set the bounding box at the start of each part of the experiment.
 
 We analysed parts 1 and 2 of the experiment separately.  We hypothesised that part 2 would prove more challenging for our approach; reviewing the videos we noted that participants would change the position of the tablet, and in some cases partially obscured their face with the tablet.
 
 We developed a Python program to perform the classification process.  This could operate in a non-interactive mode, where an external ground truth file was used to train and evaluate the classifier.  When used in interactive mode, the user was presented with each frame in the video, which they could then classify to a numeric state.  An ``undo'' feature was provided.  We also allowed the user to review the frames at $\pm 3$ from the frame being classified.  We added this feature since it was sometimes difficult to determine the participant's behaviour if they were moving rapidly.  
 
 \subsection{Evaluation of the classifier}
-When the classifier is operating in non-interactive mode, we have a ground-truth state for each frame, which we can use to evaluate the classifier's performance.  When using the classifier ``for real'', in interactive mode, such data will not, in general be available.  To evaluate the classifier in this case, we use a shuffle split cross validation approach to assess the classifier's accuracy. \textit{This is only appropriate if we're classifying frames at random - otherwise you're jut over-fitting}. The user can also visually assess the classifier's performance by replaying the video, with a rectangle, whose colour indicates the predicted behaviour overlaid on each frame \textit{Include a figure??}
+When the classifier is operating in non-interactive mode, we have a ground-truth state for each frame, which we can use to evaluate the classifier's performance.  When using the classifier ``for real'', in interactive mode, such data will not, in general be available.  To evaluate the classifier in this case, we use a shuffle split cross validation approach to assess the classifier's accuracy. This takes a randomly selected 50\% of the frames as holdback, fits the classifer on the remaining frames, and assesses the accuracy. We report the mean of 1000 such evaluations \textit{This is only appropriate if we're classifying frames at random - otherwise you're jut over-fitting}. The user can also visually assess the classifier's performance by replaying the video, with a rectangle, whose colour indicates the predicted behaviour overlaid on each frame \textit{Include a figure??}
 
-The \texttt{DecisionTreeClassifier} in \texttt{sklearn} was used with its default parameters to classify the behaviour in each state.   We allowed all features identified by the tracking or facial recognition algorithm as possible covariates (with the exception of facial action units in the OpenFace data) in the decision tree.  \textit{We might want to say something about the risk of over-fitting here, and/or look at how similar/different the participants' trees are.} Two different approaches were used to train the classifier:
+The \texttt{DecisionTreeClassifier} in \texttt{sklearn} was used with its default parameters to classify the behaviour in each state.   We allowed all features identified by the tracking or facial recognition algorithm as possible covariates (with the exception of facial action units in the OpenFace data) in the decision tree.   \textit{We might want to say something about the risk of over-fitting here, and/or look at how similar/different the participants' trees are.} Two different approaches were used to train the classifier:
+
+<<experimentVars, echo = FALSE>>=
+seqtimes <- c(15,30,60)
+seqframes <- seqtimes * fps
+
+randframes <- c(20, 40, 80, 160, 320)
+
+experimentpart <- c("part1")
+tracker <- c("openface")
+
+
+@
+
 
 \begin{enumerate}\compresslist
-	\item Sequential training frames; $t \in \{15,30,60\}$ seconds
-	\item Random training frames; $f \in \{20, 40, 80, 160, 320\}$ frames
+	\item Sequential training frames; $t \in \{$ \Sexpr{seqtimes} $\}$ seconds
+	\item Random training frames; $f \in \{$ \Sexpr{randframes} $\}$ frames
 \end{enumerate}
 
-\textit{We should probably choose values such that there's an overlap between the sets - allow a direct comparison}.  
 
 When training sequentially we used the ground truth data for the first $t$ seconds of each part of the experiment.  
 
 \section{Results}
 
-\section{Discussion \& Further Work}
-\textit{This needs re-writing in a more computer science-y way}
-We have shown that selecting training frames at random dramatically improves the performance of our approach.  When training the classifier with sequentially, the position of each feature is, in general, closely correlated with the previous frame.  As such each additional frame gives us relatively little new information.  Furthermore, the classifier is unlikely to be robust to changes in the participant's behaviour over the course of the experiment (for example if they change the position of the tablet) \textit{It would be interesting to see whether we get more complex (i.e.\ flexible/adaptable) decision trees with the random classifier}.  In contrast, by selecting training frames at random we will capture a representative sample of each participant's behaviour over the course of the experiment.
+For each training period and each participant we evaluated the classifier accuracy using the ground truth data for all frames that had not been used in the training process. In practice the participant's behaviour would be unknown in these frames.  For this reason we also report the accuracy obtained by the cross-validation approach described above.
 
-Although it was straightforward to classify the majority of frames when working in interactive mode, frames where the participant was transitioning between states were sometimes difficult to classify.  We plan to do further work exploring how best to handle these frames; whether it is better to treat ``transition between states'' as a separate state, or whether we should consistently include transition states in one or other of the states.  
+<<genconfigs, echo = FALSE>>=
+configurations <- tidyr::crossing(participantCode, experimentpart, tracker,
+                                  bind_rows(tidyr::crossing(config = "shuffle", frames = randframes),
+                                            tidyr::crossing(config = "noshuffle", frames = seqframes))
+)
+@
 
-We also plan to investigate whether including the accelerometer and gyroscope data in the classification tree improves prediction accuracy.   The Kinect data includes depth data.  It is, however, unclear how we might best reduce this to a form suitable for use in a decision tree classifier.  
+<<callClassifier, echo = FALSE>>=
+resultsframe <- NULL
+for (i in 1:10) { #nrow(configurations)) {
+  
+  runoutput <- tempfile()
 
-Both methods of extracting scene features from the video frames gave an accuracy that was, on average, similar across all participants.  This masks some marked differences in performance for individual participants.  \texttt{OpenFace} is less general; it only detects faces, but has the advantage that it operates completely automatically, whereas a user specified bounding box is required for \texttt{CppMT}.  Given that the process of extracting features is distinct from the classification process there is little to be lost in using multiple feature extraction methods.  
+  if (configurations[i, "tracker"] == "openface") {
+    trackerfn <- paste0(configurations[i, "participantCode"], "_front.openface.gz")
+  } else {
+    stop(paste(configurations[i, "tracker"], "filename formula not yet implemented"))
+  }
+  
+  groundtruthpfn <- paste0(configurations[i, "experimentpart"], "GroundTruth/", 
+                           configurations[i, "participantCode"], "checkGTwebcam2.csv.gz")
+  
+  # Read in ground truth to get start and end frames
+  groundtruth <- read.csv(groundtruthpfn, header = FALSE)
+  startframe <- min(groundtruth[,1])
+  endframe <- max(groundtruth[,1])
+  
+  
+  args <- c(paste0("--trackerfile=", "Tracking/", trackerfn),
+            paste0("--startframe=", startframe),
+            paste0("--endframe=", endframe),
+            paste0("--extgt=", groundtruthpfn),
+            "--useexternalgt",
+            paste0("--participantcode=", paste0(configurations[i,], collapse = ":")),
+            paste0("--", configurations[i, "config"]),
+            paste0("--summaryfile=", runoutput),
+            paste0("--externaltrainingframes=", configurations[i,"frames"])
+            )
+  
+  system2("abc-display-tool/abc-classify.py",
+          args = args,
+          stdout = NULL
+          )
 
-%\section{ACM Copyrights \& Permission}
-%Accepted extended abstracts and papers will be distributed in the
-%Conference Publications. They will also be placed in the ACM Digital
-%Library, where they will remain accessible to thousands of researchers
-%and practitioners worldwide. To view the ACM's copyright and
-%permissions policy, see:
-%\url{http://www.acm.org/publications/policies/copyright_policy}.
-%
+
+  results <- read.csv(runoutput, header = FALSE,
+                    col.names = c("configuration",
+                                  "trainedframes",
+                                  "startframe",
+                                  "endframe",
+                                  "crossvalAccuracy",
+                                  "groundtruthAccuracy"
+                                  ))[,c("crossvalAccuracy",
+                                        "groundtruthAccuracy")]
+  
+  resultsframe <- rbind(resultsframe, 
+                        c(configurations[i,], results))
+  unlink(runoutput)
+}
+
+@
+
+
+<<>>=
+print(resultsframe)
+@
+
 %\marginpar{
 %  \vspace{-45pt} \fbox{
 %    \begin{minipage}{0.925\marginparwidth}
