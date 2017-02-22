@@ -144,9 +144,10 @@
 \section{Introduction}
 
 In a previous paper (??) we took showed how object tracking could be used to classify participants' behaviour.  We termed this approach ABC: Automated Behavioural Coding.  Such an approach reduces the need for manual coding of behaviours in videos.  
-<<setup>>=
-
-library(dplyr)
+<<setup, cache = FALSE, echo = FALSE, message=FALSE>>=
+library(knitr)
+library(tidyverse)
+opts_chunk$set(cache = TRUE, autodep = TRUE)
 @
 
 <<numparts, engine='bash', echo = FALSE>>=
@@ -183,7 +184,7 @@ fps <- 30
 \textit{We need a paragraph here on how the experiment worked - what happened in the training, part1 and part2 of it. How long each part of the experiment lasted.  This could be good to put in graphical time-line in the side bar??}
 
 
-For \Sexpr{numparticipants} of the participants\footnote{Work to encode the remaining participants is ongoing.}, the web-cam video was manually encoded \textit{using some software??}, to produce a ground-truth for each participant.  Participants' attention towards the tablet, TV and elsewhere was recorded (we combined the last two states in this analysis to consider only ``tablet'' and ``not tablet'' as possible behaviours. We recorded the start and end times of the transition between states. We encoded frames before the mid-point of each transition period to the original state, and the remaining frames to the new state.
+For \Sexpr{numparticipants} of the participants\footnote{Work to encode the remaining participants is ongoing.}, the web-cam video was manually encoded \textit{using some software??}, to produce a ground-truth for each participant.  Participants' attention towards the tablet, TV and elsewhere was recorded (we combined the last two states in this analysis to consider only ``tablet'' and ``not tablet'' as possible behaviours). We recorded the start and end times of the transition between states. We encoded frames before the mid-point of each transition period to the original state, and the remaining frames to the new state.
 
 %We developed a bespoke tool to extract each frame of the colour video stream recorded by the Kinect in an eXtended Event File.  Occasional frames had been dropped by the Kinect when recording.  Since the ground truth behaviours were recorded against the web-cam time, we mapped "Kinect times" to "web-cam times" where required.
 
@@ -196,7 +197,7 @@ We analysed parts 1 and 2 of the experiment separately.  We hypothesised that pa
 We developed a Python program to perform the classification process.  This could operate in a non-interactive mode, where an external ground truth file was used to train and evaluate the classifier.  When used in interactive mode, the user was presented with each frame in the video, which they could then classify to a numeric state.  An ``undo'' feature was provided.  We also allowed the user to review the frames at $\pm 3$ from the frame being classified.  We added this feature since it was sometimes difficult to determine the participant's behaviour if they were moving rapidly.  
 
 \subsection{Evaluation of the classifier}
-When the classifier is operating in non-interactive mode, we have a ground-truth state for each frame, which we can use to evaluate the classifier's performance.  When using the classifier ``for real'', in interactive mode, such data will not, in general be available.  To evaluate the classifier in this case, we use a shuffle split cross validation approach to assess the classifier's accuracy. This takes a randomly selected 50\% of the frames as holdback, fits the classifer on the remaining frames, and assesses the accuracy. We report the mean of 1000 such evaluations \textit{This is only appropriate if we're classifying frames at random - otherwise you're jut over-fitting}. The user can also visually assess the classifier's performance by replaying the video, with a rectangle, whose colour indicates the predicted behaviour overlaid on each frame \textit{Include a figure??}
+When the classifier is operating in non-interactive mode, we have a ground-truth state for each frame, which we can use to evaluate the classifier's performance.  When using the classifier ``for real'', in interactive mode, such data will not, in general be available.  To evaluate the classifier in this case, we use a shuffle split cross validation approach to assess the classifier's accuracy. This takes a randomly selected 50\% of the frames as holdback, fits the classifer on the remaining frames, and calculates the accuracy. We report the mean of 1000 such evaluations \textit{This is only appropriate if we're classifying frames at random - otherwise you're jut over-fitting}. The user can also visually assess the classifier's performance by replaying the video, with a rectangle, whose colour indicates the predicted behaviour overlaid on each frame \textit{Include a figure??}
 
 The \texttt{DecisionTreeClassifier} in \texttt{sklearn} was used with its default parameters to classify the behaviour in each state.   We allowed all features identified by the tracking or facial recognition algorithm as possible covariates (with the exception of facial action units in the OpenFace data) in the decision tree.   \textit{We might want to say something about the risk of over-fitting here, and/or look at how similar/different the participants' trees are.} Two different approaches were used to train the classifier:
 
@@ -232,9 +233,12 @@ configurations <- tidyr::crossing(participantCode, experimentpart, tracker,
 )
 @
 
+
+% TODO sort out random seed; need to add seed to github, and then
+% load at start of each iter and save at end
 <<callClassifier, echo = FALSE>>=
 resultsframe <- NULL
-for (i in 1:10) { #nrow(configurations)) {
+for (i in 1:nrow(configurations)) {
   
   runoutput <- tempfile()
 
@@ -279,18 +283,48 @@ for (i in 1:10) { #nrow(configurations)) {
                                   "groundtruthAccuracy"
                                   ))[,c("crossvalAccuracy",
                                         "groundtruthAccuracy")]
-  
+  if (nrow(results) > 1) {
+    stop(paste("Something went wrong for ", configurations[i,]))
+  }
   resultsframe <- rbind(resultsframe, 
-                        c(configurations[i,], results))
+                        data.frame(c(configurations[i,], 
+                          crossvalAccuracy = results[1,"crossvalAccuracy"],
+                          groundtruthAccuracy = results[1, "groundtruthAccuracy"])))
   unlink(runoutput)
 }
 
 @
 
+<<echo=FALSE>>=
+resultsframe <- as_tibble(resultsframe)
 
-<<>>=
-print(resultsframe)
+resultsmean <- resultsframe %>% group_by(config, frames, experimentpart) %>% summarise(avgxval = mean(crossvalAccuracy),
+                                                        avggt = mean(groundtruthAccuracy))
+
+accuracyfigure <- ggplot(data = resultsmean, aes(x = frames, y = avggt, colour = config)) + geom_line() + geom_line(aes(y = avgxval), linetype = 2) +   facet_wrap(~ experimentpart)
+
 @
+
+<<resultsfig, echo=FALSE, width='1.3\\columnwidth', fig.cap="Test caption">>=
+print(accuracyfigure)
+@
+
+ 
+\section{Discussion \& Further Work}
+ 
+\textit{This needs re-writing in a more computer science-y way}
+ 
+We have shown that selecting training frames at random dramatically improves the performance of our approach.  When training the classifier with sequentially, the position of each feature is, in general, closely correlated with the previous frame.  As such each additional frame gives us relatively little new information.  Furthermore, the classifier is unlikely to be robust to changes in the participant's behaviour over the course of the experiment (for example if they change the position of the tablet) \textit{It would be interesting to see whether we get more complex (i.e.\ flexible/adaptable) decision trees with the random classifier}.  In contrast, by selecting training frames at random we will capture a representative sample of each participant's behaviour over the course of the experiment.
+ 
+Although it was straightforward to classify the majority of frames when working in interactive mode, frames where the participant was transitioning between states were sometimes difficult to classify.  We plan to do further work exploring how best to handle these frames; whether it is better to treat ``transition between states'' as a separate state, or whether we should consistently include transition states in one or other of the states.  
+ 
+We also plan to investigate whether including the accelerometer and gyroscope data in the classification tree improves prediction accuracy.   The Kinect data includes depth data.  It is, however, unclear how we might best reduce this to a form suitable for use in a decision tree classifier.  
+ 
+ 
+Both methods of extracting scene features from the video frames gave an accuracy that was, on average, similar accross all participants.  This masks some marked differences in performance for individual participants.  \texttt{OpenFace} is less general; it only detects faces, but has the advantage that it operates completelly automatically, whereas a user specified bounding box is required for \texttt{CppMT}.  Given that the process of extracting features is distinct from the classification process there is little to be lost in using multiple feature extraction methods. 
+
+\subsection{Acknowledgements}
+
 
 %\marginpar{
 %  \vspace{-45pt} \fbox{
