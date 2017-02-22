@@ -10,5 +10,9 @@ figures/map.png
 figures/sigchi-logo.png
 extended-abstract.tex
 sample.bib
-
+.Rproj.user
+IDInteraction_DIS.tex
+*.synctex.gz
+*concordance.tex
+IDInteraction_DIS.tex
 

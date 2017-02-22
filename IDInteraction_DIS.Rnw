@@ -104,9 +104,8 @@
 }
 % \reversemarginpar%
 
-\usepackage{Sweave}
 \begin{document}
-\input{IDInteraction_DIS-concordance}
+\SweaveOpts{concordance=TRUE}
 
 %% For the camera ready, use the commands provided by the ACM in the Permission Release Form.
 %\CopyrightYear{2007}
