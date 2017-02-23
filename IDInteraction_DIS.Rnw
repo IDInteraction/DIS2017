@@ -197,7 +197,7 @@ We analysed parts 1 and 2 of the experiment separately.  We hypothesised that pa
 We developed a Python program to perform the classification process.  This could operate in a non-interactive mode, where an external ground truth file was used to train and evaluate the classifier.  When used in interactive mode, the user was presented with each frame in the video, which they could then classify to a numeric state.  An ``undo'' feature was provided.  We also allowed the user to review the frames at $\pm 3$ from the frame being classified.  We added this feature since it was sometimes difficult to determine the participant's behaviour if they were moving rapidly.  
 
 \subsection{Evaluation of the classifier}
-When the classifier is operating in non-interactive mode, we have a ground-truth state for each frame, which we can use to evaluate the classifier's performance.  When using the classifier ``for real'', in interactive mode, such data will not, in general be available.  To evaluate the classifier in this case, we use a shuffle split cross validation approach to assess the classifier's accuracy. This takes a randomly selected 50\% of the frames as holdback, fits the classifer on the remaining frames, and calculates the accuracy. We report the mean of 1000 such evaluations \textit{This is only appropriate if we're classifying frames at random - otherwise you're jut over-fitting}. The user can also visually assess the classifier's performance by replaying the video, with a rectangle, whose colour indicates the predicted behaviour overlaid on each frame \textit{Include a figure??}
+When the classifier is operating in non-interactive mode, we know the ground-truth state for each frame, which we can use to evaluate the classifier's performance.  When using the classifier ``for real'', in interactive mode, such data will not, in general be available. When training from a random sample of frames, we can exploit the randomness of the sample to estimate the classifier accuracy usings a shuffle split cross validation approach.  This takes a randomly selected 50\% of the frames as holdback, fits the classifer on the remaining frames, and calculates the accuracy. We report the mean of 1000 such evaluations. We cannot use this approach when classifying frames sequentially, since our training data are not a random sample of the video's frames; such an approach would inflate the estimated accuacy. When running in interactive mode the user can also visually assess the classifier's performance by replaying the video, with a rectangle, whose colour indicates the predicted behaviour overlaid on each frame \textit{Include a figure??}.  If necessary they can then classify further frames, until the required accuracy is reached. 
 
 The \texttt{DecisionTreeClassifier} in \texttt{sklearn} was used with its default parameters to classify the behaviour in each state.   We allowed all features identified by the tracking or facial recognition algorithm as possible covariates (with the exception of facial action units in the OpenFace data) in the decision tree.   \textit{We might want to say something about the risk of over-fitting here, and/or look at how similar/different the participants' trees are.} Two different approaches were used to train the classifier:
 
@@ -205,7 +205,7 @@ The \texttt{DecisionTreeClassifier} in \texttt{sklearn} was used with its defaul
 seqtimes <- c(15,30,60)
 seqframes <- seqtimes * fps
 
-randframes <- c(20, 40, 80, 160, 320)
+randframes <- c(30, 60, 120, 240, 450)
 
 experimentpart <- c("part1")
 tracker <- c("openface")
@@ -224,7 +224,7 @@ When training sequentially we used the ground truth data for the first $t$ secon
 
 \section{Results}
 
-For each training period and each participant we evaluated the classifier accuracy using the ground truth data for all frames that had not been used in the training process. In practice the participant's behaviour would be unknown in these frames.  For this reason we also report the accuracy obtained by the cross-validation approach described above.
+For each training period and each participant we evaluated the classifier accuracy using the ground truth data for all frames that had not been used in the training process. In practice the participant's behaviour would be unknown in these frames.  We also show, for the random sampling process, the classifier's estimated accuracy.
 
 <<genconfigs, echo = FALSE>>=
 configurations <- tidyr::crossing(participantCode, experimentpart, tracker,
