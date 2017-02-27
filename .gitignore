@@ -17,4 +17,5 @@ IDInteraction_DIS.tex
 cache/
 *.csv
 .Rhistory
+.RData
 
