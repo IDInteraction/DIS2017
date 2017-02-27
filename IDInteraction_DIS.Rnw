@@ -203,14 +203,11 @@ The \texttt{DecisionTreeClassifier} in \texttt{sklearn} was used with its defaul
 
 <<experimentVars, echo = FALSE>>=
 seqtimes <- c(15,30,60)
-seqframes <- seqtimes * fps
-
 randframes <- c(30, 60, 120, 240, 450)
+experimentpart <- c("part1", "part2")
+tracker <- c("openface", "cppMT")
 
-experimentpart <- c("part1")
-tracker <- c("openface")
-
-
+seqframes <- seqtimes * fps
 @
 
 
@@ -237,27 +234,72 @@ configurations <- tidyr::crossing(participantCode, experimentpart, tracker,
 % TODO sort out random seed; need to add seed to github, and then
 % load at start of each iter and save at end
 <<callClassifier, echo = FALSE>>=
+
+
+
+getFrame <- function(participantCode, experimentpart, event){
+
+  # Get the frame number that an experiemnt part start/ends at
+  part <- stringr::str_match(experimentpart, "\\d+")  
+  if (is.na(part)) {
+    stop("Experiment part could not be extracted")
+  }
+  
+  eventstring <- paste0(event, part)
+  outputname <- tempfile()
+  
+  sysargs <- c(paste0("--attentionfile=", "./Attention/", participantCode, "_attention.txt"),
+               paste0("--outputfile=", outputname),
+               paste0("--participant=", participantCode),
+               paste0("--event=", eventstring),
+               paste0("--externaleventfile=./Attention/transitionAnnotations.csv")
+               )
+  
+  system2("abc-display-tool/abc-extractAttention.py",
+          args = sysargs,
+          stdout = NULL
+          )
+  
+  results <- read.csv(outputname)
+  
+  if (nrow(results) != 1) {
+    stop("Error reading results frame")
+  }
+  
+  outframe <- results[1, "frame"]
+  
+  unlink(outputname)
+  
+  return(outframe)
+}
+
+
+
 resultsframe <- NULL
 for (i in 1:nrow(configurations)) {
-  
+  # Generating the results can take a long while, but anything we print will end up in the paper
+  # So dump the current config to a file to allow progress to be monitored
+  write.csv(configurations[i,], file = "progress.csv")
   runoutput <- tempfile()
 
   if (configurations[i, "tracker"] == "openface") {
     trackerfn <- paste0(configurations[i, "participantCode"], "_front.openface.gz")
-  } else {
+  } else if (configurations[i, "tracker"] == "cppMT") {
+    trackerfn <- paste0(configurations[i, "participantCode"], "_",
+                paste0(configurations[i,"experimentpart"], "_front_cppMT.csv.gz"))
+  } else {  
     stop(paste(configurations[i, "tracker"], "filename formula not yet implemented"))
   }
   
-  groundtruthpfn <- paste0(configurations[i, "experimentpart"], "GroundTruth/", 
-                           configurations[i, "participantCode"], "checkGTwebcam2.csv.gz")
+  groundtruthpfn <- paste0("Groundtruth/", 
+                           configurations[i, "participantCode"], "_groundtruth.csv")
   
-  # Read in ground truth to get start and end frames
-  groundtruth <- read.csv(groundtruthpfn, header = FALSE)
-  startframe <- min(groundtruth[,1])
-  endframe <- max(groundtruth[,1])
+  # Use abc-extractAttention to get start/end frame of each experiement
+  startframe <- getFrame(configurations[i,"participantCode"], configurations[i,"experimentpart"], "start")
+  endframe <- getFrame(configurations[i,"participantCode"], configurations[i,"experimentpart"], "end")
   
   
-  args <- c(paste0("--trackerfile=", "Tracking/", trackerfn),
+  runargs <- c(paste0("--trackerfile=", "Tracking/", trackerfn),
             paste0("--startframe=", startframe),
             paste0("--endframe=", endframe),
             paste0("--extgt=", groundtruthpfn),
@@ -269,7 +311,7 @@ for (i in 1:nrow(configurations)) {
             )
   
   system2("abc-display-tool/abc-classify.py",
-          args = args,
+          args = runargs,
           stdout = NULL
           )
 
@@ -298,10 +340,17 @@ for (i in 1:nrow(configurations)) {
 <<echo=FALSE>>=
 resultsframe <- as_tibble(resultsframe)
 
-resultsmean <- resultsframe %>% group_by(config, frames, experimentpart) %>% summarise(avgxval = mean(crossvalAccuracy),
-                                                        avggt = mean(groundtruthAccuracy))
 
-accuracyfigure <- ggplot(data = resultsmean, aes(x = frames, y = avggt, colour = config)) + geom_line() + geom_line(aes(y = avgxval), linetype = 2) +   facet_wrap(~ experimentpart)
+
+resultsmean <- resultsframe %>% group_by(config, frames, tracker, experimentpart) %>% 
+                    summarise(avgxval = mean(crossvalAccuracy),
+                    avggt = mean(groundtruthAccuracy), 
+                    datapts = length(groundtruthAccuracy))
+if (all(resultsmean$datapts != numparticipants)) {
+  stop("Multiple experimental configs being grouped")
+}
+resultsmean$avgxval <- ifelse(resultsmean$config == "shuffle", resultsmean$avgxval, NA)
+accuracyfigure <- ggplot(data = resultsmean, aes(x = frames, y = avggt, colour = config)) + geom_line() + geom_line(aes(y = avgxval), linetype = 2) +   facet_wrap( experimentpart ~ tracker)
 
 @
 
