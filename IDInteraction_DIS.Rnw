@@ -148,6 +148,9 @@ In a previous paper (??) we took showed how object tracking could be used to cla
 library(knitr)
 library(tidyverse)
 opts_chunk$set(cache = TRUE, autodep = TRUE)
+logConn <- file("Runlog.txt")
+file.copy("RNGstate.dontchange", "RNGstate")
+writeLines("Copied RNGstate.dontchange to RNGstate for run", con = logConn)
 @
 
 <<numparts, engine='bash', echo = FALSE>>=
@@ -224,6 +227,7 @@ When training sequentially we used the ground truth data for the first $t$ secon
 For each training period and each participant we evaluated the classifier accuracy using the ground truth data for all frames that had not been used in the training process. In practice the participant's behaviour would be unknown in these frames.  We also show, for the random sampling process, the classifier's estimated accuracy.
 
 <<genconfigs, echo = FALSE>>=
+participantCode <- participantCode
 configurations <- tidyr::crossing(participantCode, experimentpart, tracker,
                                   bind_rows(tidyr::crossing(config = "shuffle", frames = randframes),
                                             tidyr::crossing(config = "noshuffle", frames = seqframes))
@@ -274,12 +278,14 @@ getFrame <- function(participantCode, experimentpart, event){
 }
 
 
+# It appears that the file is closed at the end of each Knitr chunk, so we reopen it here
 
+logConn <- file("Runlog.txt", open = "at")
 resultsframe <- NULL
 for (i in 1:nrow(configurations)) {
   # Generating the results can take a long while, but anything we print will end up in the paper
   # So dump the current config to a file to allow progress to be monitored
-  write.csv(configurations[i,], file = "progress.csv")
+  write(paste(configurations[i,], collapse = ":"), logConn, append = TRUE)
   runoutput <- tempfile()
 
   if (configurations[i, "tracker"] == "openface") {
@@ -307,7 +313,8 @@ for (i in 1:nrow(configurations)) {
             paste0("--participantcode=", paste0(configurations[i,], collapse = ":")),
             paste0("--", configurations[i, "config"]),
             paste0("--summaryfile=", runoutput),
-            paste0("--externaltrainingframes=", configurations[i,"frames"])
+            paste0("--externaltrainingframes=", configurations[i,"frames"]),
+            paste0("--rngstate=RNGstate")
             )
   
   system2("abc-display-tool/abc-classify.py",
@@ -322,16 +329,16 @@ for (i in 1:nrow(configurations)) {
                                   "startframe",
                                   "endframe",
                                   "crossvalAccuracy",
+                                  "crossvalAccuracySD",
+                                 "crossvalAccuracyLB",
+                                 "crossvalAccuracyUB",
                                   "groundtruthAccuracy"
-                                  ))[,c("crossvalAccuracy",
-                                        "groundtruthAccuracy")]
+                                  ))
   if (nrow(results) > 1) {
     stop(paste("Something went wrong for ", configurations[i,]))
   }
   resultsframe <- rbind(resultsframe, 
-                        data.frame(c(configurations[i,], 
-                          crossvalAccuracy = results[1,"crossvalAccuracy"],
-                          groundtruthAccuracy = results[1, "groundtruthAccuracy"])))
+                        data.frame(c(configurations[i,],  results)))
   unlink(runoutput)
 }
 
@@ -340,16 +347,19 @@ for (i in 1:nrow(configurations)) {
 <<echo=FALSE>>=
 resultsframe <- as_tibble(resultsframe)
 
-
-
 resultsmean <- resultsframe %>% group_by(config, frames, tracker, experimentpart) %>% 
                     summarise(avgxval = mean(crossvalAccuracy),
                     avggt = mean(groundtruthAccuracy), 
                     datapts = length(groundtruthAccuracy))
-if (all(resultsmean$datapts != numparticipants)) {
+if (all(resultsmean$datapts > numparticipants)) {
   stop("Multiple experimental configs being grouped")
 }
-resultsmean$avgxval <- ifelse(resultsmean$config == "shuffle", resultsmean$avgxval, NA)
+if (all(resultsmean$datapts < numparticipants)) {
+  warning("Incomplete run - don't have results for all participants")
+}
+  resultsmean$avgxval <- ifelse(resultsmean$config == "shuffle", resultsmean$avgxval, NA)
+
+
 accuracyfigure <- ggplot(data = resultsmean, aes(x = frames, y = avggt, colour = config)) + geom_line() + geom_line(aes(y = avgxval), linetype = 2) +   facet_wrap( experimentpart ~ tracker)
 
 @
@@ -652,6 +662,9 @@ Both methods of extracting scene features from the video frames gave an accuracy
 
 %\bibliographystyle{SIGCHI-Reference-Format}
 %\bibliography{sample}
+<<closelog>>=
+close(logConn)
+@
 
 \end{document}
 
