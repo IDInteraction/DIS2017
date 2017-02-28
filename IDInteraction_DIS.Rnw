@@ -38,8 +38,7 @@
   Caps} \def\plainauthor{First Author, Second Author, Third Author,
   Fourth Author, Fifth Author, Sixth Author}
 \def\emptyauthor{}
-\def\plainkeywords{Authors' choice; of terms; separated; by
-  semicolons; include commas, within terms only; required.}
+\def\plainkeywords{Behavioural coding; object tracking; visual attention; reproducible methods}
 \def\plaingeneralterms{Documentation, Standardization}
 
 \title{How should we train a tool to recognise behaviour?}
@@ -143,7 +142,7 @@
 
 \section{Introduction}
 
-In a previous paper \cite{Apaolaza2016} we took showed how object tracking could be used to classify participants' behaviour.  We termed this approach ABC: Automated Behavioural Coding.  Such an approach reduces the need for manual coding of behaviours in videos.  
+In a previous paper \cite{Apaolaza2016} we took showed how object tracking could be used to classify participants' behaviour.  We termed this approach ABC: Automated Behavioural Coding.  Such an approach reduces the need for manual coding of behaviours in videos. We compare the performance of object tracking (as used in \cite{Apaolaza2016}) to face detection, and compare the performance of training sequential and randomly sampled frames. 
 <<setup, cache = FALSE, echo = FALSE, message=FALSE>>=
 library(knitr)
 library(tidyverse)
@@ -205,7 +204,7 @@ We developed a Python program to perform the classification process.  This could
 \subsection{Evaluation of the classifier}
 When the classifier is operating in non-interactive mode, we know the ground-truth state for each frame, which we can use to evaluate the classifier's performance.  When using the classifier ``for real'', in interactive mode, such data will not, in general be available. When training from a random sample of frames, we can exploit the randomness of the sample to estimate the classifier accuracy using a shuffle split cross validation approach.  This takes a randomly selected 50\% of the frames as hold-back, fits the classifier on the remaining frames, and calculates the accuracy. We report the mean of 1000 such evaluations. We cannot use this approach when classifying frames sequentially, since our training data are not a random sample of the video's frames; such an approach would inflate the estimated accuracy. When running in interactive mode the user can also visually assess the classifier's performance by replaying the video, with a rectangle, whose colour indicates the predicted behaviour overlaid on each frame\footnote{Include a figure??}.  If necessary they can then classify further frames, until the required accuracy is reached. 
 
-The \texttt{DecisionTreeClassifier} in \texttt{sklearn} was used with its default parameters to classify the behaviour in each state.   We allowed all features identified by the tracking or facial recognition algorithm as possible covariates (with the exception of facial action units in the OpenFace data) in the decision tree.   \textit{We might want to say something about the risk of over-fitting here, and/or look at how similar/different the participants' trees are.} Two different approaches were used to train the classifier:
+The \texttt{DecisionTreeClassifier} in \texttt{sklearn} was used with its default parameters to classify the behaviour in each video frame.   We allowed all features identified by the tracking or facial recognition algorithm as possible covariates (with the exception of facial action units in the OpenFace data) in the decision tree.   \textit{We might want to say something about the risk of over-fitting here, and/or look at how similar/different the participants' trees are.} Two different approaches were used to train the classifier:
 
 <<experimentVars, echo = FALSE>>=
 seqtimes <- c(15,30,60)
@@ -390,7 +389,9 @@ participantplot <- ggplot(data = resultsframe[resultsframe$tracker == plottracke
 print(participantplot)
 @
 
- 
+\section{Reproducible research}
+We use Docker images to run the CppMT and Openface on each of participant's video, as described in \cite{Apaolaza2016}.   We extend the idea of reproducibility to this paper, which is written using Knitr\cite{Knitr}.  This allows us to interleave R and \LaTeX~code.   For example, if we decide to evaluate a different number of training frames, we simply alter the values in our \texttt{randframes} array, and ``knit'' the document.  This calls the Python code to evaluate the performance of the classifier with the new values, and updates the graphs that depend on these values.  The Knitr source of this document, the ground truth files, and links the outputs CppMT and Openface\footnote{We are unable to make the source videos available owing to participant confidentiality.} are available at \url{https://github.com/IDInteraction/DIS2017}. From these it is possible to recreate this abstract, and vary the analysis parameters used.  
+
 \section{Discussion \& Further Work}
  
  
