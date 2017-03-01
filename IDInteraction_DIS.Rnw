@@ -416,10 +416,12 @@ We have shown that selecting training frames at random dramatically improves the
 In contrast, by selecting training frames at random we will capture a representative sample of each participant's behaviour over the course of the experiment. 
  
 Although it was straightforward to classify the majority of frames when working in interactive mode, frames where the participant was transitioning between states were sometimes difficult to classify.  We plan to do further work exploring how best to handle these frames; whether it is better to treat ``transition between states'' as a separate state, or whether we should consistently include transition frames in one or other of the states.  
+
+ Both methods of extracting scene features from the video frames gave an accuracy that was, on average, similar across all participants.  This masks some marked differences in performance for individual participants\footnote{We haven't shown this in the paper\ldots perhaps show just some participants, and the different trackers/parts in figure \ref{fig:participantFig}?}.  \texttt{OpenFace} is less general; it only detects faces, but has the advantage that it operates completely automatically, whereas a user specified bounding box is required for \texttt{CppMT}.  
+
+We also plan to investigate using the remaining sensor data (e.g.\ accelerometer and Kinect data) to improve the accuracy of our predictions.  We note that the ``tracking'' and ``classification'' parts of our approach are distinct, and that other, domain specifc ``tracking'' approaches may also be well suited to generate data for the classifer.
  
-We also plan to investigate whether including the accelerometer and gyroscope data in the classification tree improves prediction accuracy.   The Kinect data includes depth data.  It is, however, unclear how we might best reduce this to a form suitable for use in a decision tree classifier.  
- 
-Both methods of extracting scene features from the video frames gave an accuracy that was, on average, similar across all participants.  This masks some marked differences in performance for individual participants.  \texttt{OpenFace} is less general; it only detects faces, but has the advantage that it operates completely automatically, whereas a user specified bounding box is required for \texttt{CppMT}.  
+
 
 \subsection{Acknowledgements}
 We would like to thank the participants who took part in this experiment. We would like to thank the EPSRC and the BBC for their funding contribution to this work via grants EP/K503782/1, EP/H500154/1, and EP/M017133/1.\footnote{This is straight from \cite{Apaolaza2016} - not sure if it's the same grant codes?}
