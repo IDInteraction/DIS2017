@@ -366,14 +366,24 @@ conflevs <- ifelse(conflevs == "noshuffle", "sequential", conflevs)
 levels(resultsmean$config) <- conflevs
 
 resultsmean <- resultsmean %>% rename(training = config)
-accuracyfigure <- ggplot(data = resultsmean, aes(x = frames, y = avggt, colour = training)) + geom_line() + geom_line(aes(y = avgxval), linetype = 2) +   facet_wrap( experimentpart ~ tracker) + xlab("training frames") + 
-  ylab("mean accuracy")
+accuracyfigure <- ggplot(data = resultsmean, aes(x = frames, y = avggt, colour = training)) + geom_line() + geom_line(aes(y = avgxval), linetype = 2) +   facet_wrap( experimentpart ~ tracker, ncol = 1) + xlab("training frames") + 
+  ylab("mean accuracy")+ theme(legend.position = "bottom")
+
+ggsave("figures/accuracy.pdf", plot = accuracyfigure, device = "pdf", width = 12, height = 28, units = "cm")
 
 @
 
-<<resultsfig, echo=FALSE, width='1.3\\columnwidth', fig.cap="Mean accuracy of the sequential and randomised training processes. The dashed line shows in the mean accuracy estimated using the cross-validation procedure described in the main text.">>=
-print(accuracyfigure)
-@
+
+
+\begin{marginfigure}[-35pc]
+  \begin{minipage}{\marginparwidth}
+    \centering
+    \includegraphics[width=0.9\marginparwidth]{figures/accuracy}
+	  \caption{Mean accuracy of the sequential and randomised training processes. The dashed line shows in the mean accuracy estimated using the cross-validation procedure described in the main text.}\label{fig:resultsfig}
+  \end{minipage}
+\end{marginfigure}
+
+
 
 <<participantFig, echo=FALSE, width='1.3\\columnwidth', fig.cap="(Not sure whether to include this graph (or similar) or not.  It shows (for part1 of experiment and openface tracking) how the accuracy estimated by the cross validation approach (red, with 95\\% CI) compares to the actual accuracy using ground truth (blue).">>=
 plotpart = "part1"
@@ -385,7 +395,7 @@ participantplot <- ggplot(data = resultsframe[resultsframe$tracker == plottracke
   geom_ribbon(aes(ymin = crossvalAccuracyLB, ymax = crossvalAccuracyUB), alpha = 0.4, colour = NA) + 
   geom_line() + geom_line(aes(y = groundtruthAccuracy), colour = "blue") +
   facet_wrap(~ participantCode) + xlab("training frames") + ylab("accuracy") + theme(legend.position = "none") +
-  ggtitle(paste("Participant accuracy,", plottracker, ",", plotpart))
+  ggtitle(paste("Participant accuracy,", plottracker, ",", plotpart)) 
 print(participantplot)
 @
 
