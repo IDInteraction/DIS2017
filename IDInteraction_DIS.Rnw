@@ -156,7 +156,7 @@ if (copystate) {
 @
 
 <<numparts, engine='bash', echo = FALSE>>=
-find ./part1GroundTruth/P??checkGTwebcam2.csv.gz -printf "%f\n" | cut -c1-3 > participantcodes.csv
+find ./Groundtruth/P??_groundtruth.csv -printf "%f\n" | cut -c1-3 > participantcodes.csv
 
 @
 
@@ -165,6 +165,11 @@ participantCode <- read.csv("participantcodes.csv", header = FALSE, stringsAsFac
                             col.names = "participantCode") 
 numparticipants <- nrow(participantCode)
 #unlink("participantcodes.csv")
+
+if (numparticipants == 0 ){
+  "Stop - no participants found.  Check groundtruth folder contains data"
+  
+}
 @
 
 
