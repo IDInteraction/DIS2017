@@ -142,7 +142,7 @@
 
 \section{Introduction}
 
-In a previous paper \cite{Apaolaza2016} we took showed how object tracking could be used to classify participants' behaviour.  We termed this approach ABC: Automated Behavioural Coding.  Such an approach reduces the need for manual coding of behaviours in videos. We compare the performance of object tracking (as used in \cite{Apaolaza2016}) to face detection, and compare the performance of training sequential and randomly sampled frames. 
+In a previous paper \cite{Apaolaza2016} we took showed how object tracking could be used to classify participants' behaviour. This can reduce the need for manual coding of behaviours in videos.  We used object tracking to follow participants movements throughout the entire video, and  used ground truth measurements from the initial part of the video to train a classifier. The classifier's predictions were then compared to the ground truth for the remainder of the video to evaluate its performance.  In this paper we show that an alternative approach to training the clasifier, where training frames are slected at random rather than sequentially, substantially improves the performance of the technique. We also compare the performance of object tracking (as used in \cite{Apaolaza2016}) to face detection.   
 <<setup, cache = FALSE, echo = FALSE, message=FALSE>>=
 library(knitr)
 library(tidyverse)
@@ -189,7 +189,7 @@ fps <- 30
 \textit{We need a paragraph here on how the experiment worked - what happened in the training, part1 and part2 of it. How long each part of the experiment lasted.  This could be good to put in graphical time-line in the side bar??}
 
 
-For \Sexpr{numparticipants} of the participants\footnote{Work to encode the remaining participants is ongoing.}, the web-cam video was manually encoded \textit{using some software??}, to produce a ground-truth for each participant.  Participants' attention towards the tablet, TV and elsewhere was recorded (we combined the last two states in this analysis to consider only ``tablet'' and ``not tablet'' as possible behaviours). We recorded the start and end times of the transition between states. We encoded frames before the mid-point of each transition period to the original state, and the remaining frames to the new state.
+For \Sexpr{numparticipants} of the participants\footnote{Work to encode the remaining participants is ongoing.}, the web-cam video was manually encoded \textit{using some software??}, to produce a ground-truth for each participant.  Participants' attention towards the tablet, TV and elsewhere was recorded (we combined the last two states in this analysis to consider only ``tablet'' and ``not tablet'' as possible behaviours). We recorded the start and end times of the transition between states. We encoded frames before the mid-point of each transition period to the original state, and the remaining frames to the new state. This data serves as our ground truth.
 
 %We developed a bespoke tool to extract each frame of the colour video stream recorded by the Kinect in an eXtended Event File.  Occasional frames had been dropped by the Kinect when recording.  Since the ground truth behaviours were recorded against the web-cam time, we mapped "Kinect times" to "web-cam times" where required.
 
