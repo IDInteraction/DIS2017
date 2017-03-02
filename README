@@ -17,7 +17,22 @@ git submodule update
 
 Copy attention data from Attention/
 Copy tracking data from Tracking/
-	TODO:  Provide scripts/Docker images to produce from video
+
+[ To generate tracking from the source videos, copy all the videos
+to video/, and the Attention folder to Attention/   Install the IDInteraction
+tracking-tools to give access to the required scripts and Docker images.
+
+If using the original
+bounding boxes copy InitialBoundingBoxes/ from Dropbox to the
+InitialBoundingBoxes/.  (If specifying new bounding boxes edit the
+./generateTracking.sh script where indicated).  
+
+Run ./generateTracking.sh  This will run cppMT on each part of the video, and
+Openface on the whole video, and copy/compress these in the appropriate
+places. If new bounding boxes are required these will be prompted for at the
+start of the process. All the tracking happens after we have a bounding box
+for each participant and experiment part; this will take many hours to run. ]
+
 
 Encode attentions: ./encodeAttentions.sh
 
