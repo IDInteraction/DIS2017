@@ -104,7 +104,6 @@
 % \reversemarginpar%
 
 \begin{document}
-%\SweaveOpts{concordance=TRUE}
 
 %% For the camera ready, use the commands provided by the ACM in the Permission Release Form.
 %\CopyrightYear{2007}
@@ -155,10 +154,14 @@ if (copystate) {
 }
 @
 
-<<numparts, engine='bash', echo = FALSE>>=
-find ./Groundtruth/P??_groundtruth.csv -printf "%f\n" | cut -c1-3 > participantcodes.csv
+
+
+<<echo=FALSE>>=
+unlink("participantcodes.csv")
+system2("./writeParticipantCodes.sh")
 
 @
+
 
 <<echo = FALSE>>=
 participantCode <- read.csv("participantcodes.csv", header = FALSE, stringsAsFactors = FALSE, 
