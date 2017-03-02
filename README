@@ -5,8 +5,8 @@ Requirements (that are unlikely to be installed by default):
 * R, including tidyverse
 * Python 2.7.  Will need to:
 
-pip install sklearn
-(NumPy and SciPy are also required)
+pip install sklearn (used 0.18.1)
+(NumPy (used 1.11.0) and SciPy (used 0.18.1) are also required)
 
 Clone repository & submodules from github
 
@@ -23,7 +23,3 @@ Hit "compile PDF"
 Wait a while; takes >30 mins to run tracker for all combinations specified in
 the paper.   
 Runlog.txt will log progress
-
-
-
-
