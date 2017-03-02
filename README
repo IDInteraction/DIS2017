@@ -1,0 +1,29 @@
+TODO: Write up fully
+
+Requirements (that are unlikely to be installed by default):
+* Functioning LaTeX system, with texlive-fonts-extra package installed
+* R, including tidyverse
+* Python 2.7.  Will need to:
+
+pip install sklearn
+(NumPy and SciPy are also required)
+
+Clone repository & submodules from github
+
+
+Copy attention data from Attention/
+Copy tracking data from Tracking/
+	TODO:  Provide scripts/Docker images to produce from video
+
+Encode attentions: ./encodeAttentions.sh
+
+Load the project in R Studio
+Open IDInteraction_DIS.Rnw
+Hit "compile PDF"
+Wait a while; takes >30 mins to run tracker for all combinations specified in
+the paper.   
+Runlog.txt will log progress
+
+
+
+
