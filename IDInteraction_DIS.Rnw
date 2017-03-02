@@ -321,7 +321,7 @@ for (i in 1:nrow(configurations)) {
 
 <<echo=FALSE>>=
 resultsframe <- as_tibble(resultsframe)
-
+write.csv(resultsframe, file=paste0("results", Sys.Date(), ".csv"))
 resultsmean <- resultsframe %>% group_by(config, frames, tracker, experimentpart) %>% 
                     summarise(avgxval = mean(crossvalAccuracy),
                     avggt = mean(groundtruthAccuracy), 
