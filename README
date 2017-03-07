@@ -2,11 +2,15 @@ TODO: Write up fully
 
 Requirements (that are unlikely to be installed by default):
 * Functioning LaTeX system, with texlive-fonts-extra package installed
-* R, including tidyverse
+* R, including tidyverse.
+[ Tidyverse requires the following packages, that may not be installed by
+default: libcurl4-openssl-dev, libssl, libxml2-dev ]
+
 * Python 2.7.  Will need to:
 
 pip install sklearn (used 0.18.1)
-(NumPy (used 1.11.0) and SciPy (used 0.18.1) are also required)
+(NumPy (used 1.11.0), SciPy (used 0.18.1), Pandas (used 0.17.1)  and OpenCV (I
+used 2.4.9.1) are also required. If installing OpenCV with pip the package is opencv-python)
 
 Clone repository & submodules from github:
 git clone https://github.com/IDInteraction/DIS2017.git
