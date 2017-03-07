@@ -194,8 +194,12 @@ fps <- 30
   \end{minipage}
 \end{marginfigure}
 
-\textit{We need a paragraph here on how the experiment worked - what happened in the training, part1 and part2 of it. How long each part of the experiment lasted.  This could be good to put in graphical time-line in the side bar??}
+The experiment started with an accommodation interval, followed by the main observation separated in two parts. Throughout the experiment, the participants carried out the same task of spotting differences between the image shown in the table and the one shown on the TV. During the first part of the main observation, participants were instructed to leave the tablet fixed on the table during the execution of the task. During the accommodation interval and the second part, participants were free to either pick up the tablet or leave it on the table.
 
+The accommodation interval lasted for a minute, and the captured data was discarded from the analysis.
+The remaining two parts lasted for two minutes and a half each. The interruptions were not strict. Once the time limit was reached, the system would wait for the participant to request the next image to indicate the end of that segment. \textit{would it be relevant to describe the length of the segments? they are all over 2 minutes and a half, but the length could vary significantly}. Occassionally the experimenter would instruct the participants to request the next image, to prevent unusually long observations.
+
+\textit{We need a paragraph here on how the experiment worked- what happened in the training, part1 and part2 of it. How long each part of the experiment lasted. This could be good to put in graphical time-line in the side bar??}
 % We calculate the results before we discuss them, so that they exist in time for the results figure float
 <<experimentVars, echo = FALSE>>=
 seqtimes <- c(15,30,60)
@@ -352,7 +356,7 @@ ggsave("figures/accuracy.pdf", plot = accuracyfigure, device = "pdf", width = 10
 @
 
 
-For \Sexpr{numparticipants} of the participants\footnote{Work to encode the remaining participants is ongoing.}, the web-cam video was manually encoded \textit{using some software??}, to produce a ground-truth for each participant.  Participants' attention towards the tablet, TV and elsewhere was recorded (we combined the last two states in this analysis to consider only ``tablet'' and ``not tablet'' as possible behaviours). We recorded the start and end times of the transition between states. We encoded frames before the mid-point of each transition period to the original state, and the remaining frames to the new state. This data serves as our ground truth.
+For \Sexpr{numparticipants} of the participants\footnote{Work to encode the remaining participants is ongoing.}, the web-cam video was manually encoded using ELAN\footnote{\url{https://tla.mpi.nl/tools/tla-tools/elan/}}, a software to annotate video and audio resources, to produce a ground-truth for each participant. For each participant, each change on attention was annotated, taking into account the transition period between the attention foci. Participants' attention towards the tablet, TV and elsewhere was recorded (we combined the last two states in this analysis to consider only ``tablet'' and ``not tablet'' as possible behaviours). We recorded the start and end times of the transition between states. We encoded frames before the mid-point of each transition period to the original state, and the remaining frames to the new state. This data serves as our ground truth.
 
 %We developed a bespoke tool to extract each frame of the colour video stream recorded by the Kinect in an eXtended Event File.  Occasional frames had been dropped by the Kinect when recording.  Since the ground truth behaviours were recorded against the web-cam time, we mapped "Kinect times" to "web-cam times" where required.
 
