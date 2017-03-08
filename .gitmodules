@@ -1,3 +1,6 @@
 [submodule "abc-display-tool"]
 	path = abc-display-tool
 	url = git@github.com:IDInteraction/abc-display-tool.git
+[submodule "spot_the_difference"]
+	path = spot_the_difference
+	url = git@github.com:IDInteraction/spot_the_difference.git

@@ -155,45 +155,11 @@ fps <- 30
 @
 
 
+%\begin{marginfigure}
+%\end{marginfigure}
+
 \section{Methods}
-
-30 participants took part in a ``spot the difference'' experiment.  Each participant was given a tablet, positioned in front of a TV screen.   Their task was to spot the differences between a series of images shown simultaneously on the tablet and TV screen.  We captured front, side and top-down video, as shown in Figure \ref{fig:setup}.   We also positioned Microsoft Kinects in front of, and to the side of the participant.  All video sources recorded at \Sexpr{fps} frames per second. Participants also wore a Metawear movement sensors\cite{Metawear} on each wrist, which captured acceleration and angular rotation rates at $\sim 25$ fps.
-
-\begin{marginfigure}
-  \begin{minipage}{\marginparwidth}
-    \centering
-    \includegraphics[width=0.9\marginparwidth]{figures/ExperimentSetup}
-	  \caption{The experiment setup.  Only video from the front-facing (top left) camera was used in our analysis.\label{fig:setup}}
-  \end{minipage}
-\end{marginfigure}
-
-The experiment started with an accommodation interval, followed by the main observation separated in two parts. Throughout the experiment, the participants carried out the same task of spotting differences between the image shown in the table and the one shown on the TV. During the first part of the main observation, participants were instructed to leave the tablet fixed on the table during the execution of the task. During the accommodation interval and the second part, participants were free to either pick up the tablet or leave it on the table.
-
-The accommodation interval lasted for a minute, and the captured data was discarded from the analysis.
-The remaining two parts lasted for two minutes and a half each. The interruptions were not strict. Once the time limit was reached, the system would wait for the participant to request the next image to indicate the end of that segment. \textit{would it be relevant to describe the length of the segments? they are all over 2 minutes and a half, but the length could vary significantly}. Occassionally the experimenter would instruct the participants to request the next image, to prevent unusually long observations.
-
-% We calculate the results before we discuss them, so that they exist in time for the results figure float
-<<experimentVars, echo = FALSE>>=
-seqtimes <- c(15,30,60)
-randframes <- c(30, 60, 120, 240, 450)
-experimentpart <- c("part1", "part2")
-tracker <- c("openface", "cppMT")
-
-seqframes <- seqtimes * fps
-@
-
-<<genconfigs, echo = FALSE>>=
-participantCode <- participantCode
-configurations <- tidyr::crossing(participantCode, experimentpart, tracker,
-                                  bind_rows(tidyr::crossing(config = "shuffle", frames = randframes),
-                                            tidyr::crossing(config = "noshuffle", frames = seqframes))
-)
-@
-
-
-<<callClassifier, echo = FALSE>>=
-
-
+<<getframe, echo = FALSE>>=
 
 getFrame <- function(participantCode, experimentpart, event){
 
@@ -230,6 +196,79 @@ getFrame <- function(participantCode, experimentpart, event){
   
   return(outframe)
 }
+
+@
+
+
+<<getlengths, echo = FALSE>>=
+# Calculate the length of each experiment part for each participant
+experimentlengths <- NULL
+for (p in participantCode$participantCode) {
+  for (part in c(1,2)) {
+    partstring <- paste0("part", part)
+    partlength  <-   getFrame(p, partstring, "end") - getFrame(p, partstring, "start")
+    thisrow <- data.frame(participantCode = p, 
+                          part = part,
+                          length = partlength/fps)
+    
+    experimentlengths <- rbind(experimentlengths, thisrow)
+  } 
+  
+}
+experimentlengths$part <- as.factor(experimentlengths$part)
+@
+
+<<echo=FALSE>>=
+exptTimeFig <- ggplot(data = experimentlengths, aes(part, length)) + geom_boxplot() + xlab("Experiment part") +
+  ylab("Experiment length (seconds)")
+
+ggsave("figures/exptTime.pdf", plot = exptTimeFig, device = "pdf", width = 8, height = 10, units = "cm")
+@
+
+
+\begin{marginfigure}[5pc]
+  \begin{minipage}{\marginparwidth}
+    \centering
+    \includegraphics[width=0.9\marginparwidth]{figures/ExperimentSetup}
+	  \caption{The experiment setup.  Only video from the front-facing (top left) camera was used in our analysis.\label{fig:setup}}
+  \end{minipage}
+\vskip 2cm
+  \begin{minipage}{\marginparwidth}
+    \centering
+    \includegraphics[width=0.9\marginparwidth]{figures/exptTime}
+	  \caption{Time distribution of each part of the experiment. \label{fig:exptTime}}
+  \end{minipage}
+\end{marginfigure}
+
+30 participants took part in a ``spot the difference'' experiment.  Each participant was given a tablet, positioned in front of a TV screen.   Their task was to spot the differences between a series of images shown simultaneously on the tablet and TV screen.  We captured front, side and top-down video, as shown in Figure \ref{fig:setup}.   We also positioned Microsoft Kinects in front of, and to the side of the participant.  All video sources recorded at \Sexpr{fps} frames per second. Participants also wore a Metawear movement sensors\cite{Metawear} on each wrist, which captured acceleration and angular rotation rates at $\sim 25$ fps.
+
+The experiment started with an accommodation interval, followed by the main observation separated in two parts. Throughout the experiment, the participants carried out the same task of spotting differences between the image shown in the table and the one shown on the TV. During the first part of the main observation, participants were instructed to leave the tablet fixed on the table during the execution of the task. During the accommodation interval and the second part, participants were free to either pick up the tablet or leave it on the table.
+
+The accommodation interval lasted for a minute, and the captured data was discarded from the analysis.
+The remaining two parts lasted for two minutes and a half each. The interruptions were not strict. Once the time limit was reached, the system would wait for the participant to request the next image to indicate the end of that segment. Figure \ref{fig:exptTime} shows the time distributtion of each experiment part. Occassionally the experimenter would instruct the participants to request the next image, to prevent unusually long observations.
+
+% We calculate the results before we discuss them, so that they exist in time for the results figure float
+<<experimentVars, echo = FALSE>>=
+seqtimes <- c(15,30,60)
+randframes <- c(30, 60, 120, 240, 450)
+experimentpart <- c("part1", "part2")
+tracker <- c("openface", "cppMT")
+
+seqframes <- seqtimes * fps
+@
+
+<<genconfigs, echo = FALSE>>=
+participantCode <- participantCode
+configurations <- tidyr::crossing(participantCode, experimentpart, tracker,
+                                  bind_rows(tidyr::crossing(config = "shuffle", frames = randframes),
+                                            tidyr::crossing(config = "noshuffle", frames = seqframes))
+)
+@
+
+
+<<callClassifier, echo = FALSE>>=
+
+
 
 
 # It appears that the file is closed at the end of each Knitr chunk, so we reopen it here
