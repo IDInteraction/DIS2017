@@ -27,6 +27,9 @@ git submodule update)
 
 Copy attention data from Attention/
 Copy tracking data from Tracking/
+Copy transition annotations from spot_the_difference submodule to Attention:
+cp spot_the_difference/controlfiles/transitionAnnotations.csv ./Attention/
+
 
 [ To generate tracking from the source videos, copy all the videos
 to video/, and the Attention folder to Attention/   Install the IDInteraction
