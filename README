@@ -18,8 +18,8 @@ git submodule init
 git submodule update
 
 (If you are not using public key authentication for gitihub you may need to edit
-.gitmodules and change the url of the submodule to
-https://github.com/IDInteraction/abc-display-tool.git, before running
+.gitmodules and change the url of the submodules to
+https://github.com/IDInteraction/abc-display-tool.git and https://github.com/IDInteraction/spot_the_difference.git  before running
 git submodule sync
 git submodule init
 git submodule update)
