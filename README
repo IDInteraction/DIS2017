@@ -52,3 +52,7 @@ Hit "compile PDF"
 Wait a while; takes >30 mins to run tracker for all combinations specified in
 the paper.   
 Runlog.txt will log progress
+
+You may find that you need to remove the cache folder if you have problems
+compiling the document in RStudio.  
+
