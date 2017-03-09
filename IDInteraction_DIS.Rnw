@@ -342,7 +342,7 @@ ggsave("figures/accuracy.pdf", plot = accuracyfigure, device = "pdf", width = 10
 @
 
 
-For \Sexpr{numparticipants} of the participants\footnote{Work to encode the remaining participants is ongoing.}, the web-cam video was manually encoded using ELAN \cite{ELAN}%,  software to annotate video and audio resources, 
+For \Sexpr{numparticipants} of the participants\footnote{Work to encode the remaining participants is ongoing.}, the web-cam video was manually encoded using \texttt{ELAN} \cite{ELAN} %,  software to annotate video and audio resources, 
 to produce a ground-truth for each participant. For each participant, each change in attention was annotated, taking into account the transition period between the attention foci. Participants' attention towards the tablet, TV and elsewhere was recorded (we combined the last two states in this analysis to consider only ``tablet'' and ``not tablet'' as possible behaviours).  We encoded frames before the mid-point of each transition period to the original state, and the remaining frames to the new state. This data serves as our ground truth.
 
 
