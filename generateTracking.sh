@@ -53,7 +53,7 @@ done;
 
 # Run the Openface tracker
 echo "Running openface"
-docker run -it --rm --name=openface --user `id -u` --volume `pwd`/video/:/idinteraction/videos:ro --volume `pwd`/Tracking/:/idinteraction/output idinteraction/openface
+docker run -it --rm --name=openface --user `id -u` --volume `pwd`/video/:/idinteraction/videos:ro --volume `pwd`/Tracking/:/idinteraction/output idinteraction/openface:2.1
 echo "Compressing openface"
 for o in ./Tracking/*.openface; do
 	gzip $o;
