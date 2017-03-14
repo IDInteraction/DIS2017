@@ -181,9 +181,14 @@ experimentlengths <- NULL
 for (p in participantCode$participantCode) {
   for (part in c(1,2)) {
     partstring <- paste0("part", part)
-    partlength  <-   getFrame(p, partstring, "end") - getFrame(p, partstring, "start")
+    partend <- getFrame(p, partstring, "end")
+    partstart <-  getFrame(p, partstring, "start")
+    partlength  <- partend - partstart
     thisrow <- data.frame(participantCode = p, 
                           part = part,
+                          partstart = partstart,
+                          partend = partend,
+                          partlength = partlength,
                           length = partlength/fps)
     
     experimentlengths <- rbind(experimentlengths, thisrow)
