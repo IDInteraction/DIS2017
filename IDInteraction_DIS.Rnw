@@ -369,8 +369,7 @@ When the classifier is operating in non-interactive mode, we know the ground-tru
   \end{minipage}
 \end{marginfigure}
 
-The \texttt{DecisionTreeClassifier} in \texttt{sklearn}~\cite{scikit-learn} was used with its default parameters to classify the behaviour in each video frame.   We allowed all features identified by the tracking or facial recognition algorithm as possible covariates (with the exception of facial action units in the OpenFace data) in the decision tree.%\footnote{We might want to say something about the risk of over-fitting here, and/or look at how similar/different the participants' trees are.} 
-Two different approaches were used to train the classifier:
+The \texttt{DecisionTreeClassifier} in \texttt{sklearn}~\cite{scikit-learn} was used with its default parameters to classify the behaviour in each video frame.   We allowed all features identified by the tracking or facial recognition algorithm as possible covariates (with the exception of facial action units in the OpenFace data) in the decision tree.  Two different approaches were used to train the classifier:
 % Seqtimes and randframes are defined quite a long way up, since we've already calculated the results by this point
 % so we can get the figure in the right place
 \begin{enumerate}[topsep=2pt]\compresslist
@@ -410,12 +409,12 @@ We use Docker containers to run CppMT and OpenFace on each of participant's vide
 
 \section{Discussion \& Further Work}
 
-We have shown that selecting training frames at random dramatically improves the performance of our approach.  When training the classifier sequentially, the position of each feature is, in general, closely correlated with the previous frame.  As such each additional frame gives us relatively little new information.  Furthermore, the classifier is unlikely to be robust to changes in the participant's behaviour over the course of the experiment (for example if they change the position of the tablet) %\footnote{It would be interesting to see whether we get more complex (i.e.\ flexible/adaptable) decision trees with the random classifier}. In contrast, by selecting training frames at random we will capture a representative sample of each participant's behaviour over the course of the experiment. 
+We have shown that selecting training frames at random dramatically improves the performance of our approach.  When training the classifier sequentially, the position of each feature is, in general, closely correlated with the previous frame.  As such each additional frame gives us relatively little new information.  Furthermore, the classifier is unlikely to be robust to changes in the participant's behaviour over the course of the experiment (for example if they change the position of the tablet) 
  
 Although it was straightforward to classify the majority of frames when working in interactive mode, frames where the participant was transitioning between states were sometimes difficult to classify.  We plan to do further work exploring how best to handle these frames; it may be more appropriate to consider ``transition'' as a separate state. %whether it is better to treat ``transition between states'' as a separate state, or whether we should consistently include transition frames in one or other of the states.  
 We also plan to investigate using the remaining sensor data (e.g.\ the sensor and Kinect data) to improve the accuracy of our predictions.
 
-Both methods of extracting scene features from the video frames gave an accuracy that was, on average, similar across all participants.  This masks some marked differences in performance for individual participants%\footnote{We haven't shown this in the paper\ldots perhaps show just some participants, and the different trackers/parts in figure \ref{fig:participantFig}?}.
+Both methods of extracting scene features from the video frames gave an accuracy that was, on average, similar across all participants.  This masks some marked differences in performance for individual participants. 
 \texttt{OpenFace} is less general; it only detects faces, but has the advantage that it operates completely automatically, whereas a user specified bounding box is required for \texttt{CppMT}.  We note that the ``tracking'' and ``classification'' parts of our approach are distinct, and that other, domain specified, ``tracking'' approaches may generate appropriate data for the classifier.
  
 
@@ -423,7 +422,7 @@ Both methods of extracting scene features from the video frames gave an accuracy
 \subsection{Acknowledgements}
 We would like to thank the participants who took part in this experiment,
 %. We would like to thank 
-and the EPSRC and the BBC for their funding contribution to this work via grants EP/K503782/1, EP/H500154/1, and EP/M017133/1.%\footnote{This is straight from \cite{Apaolaza2016} - not sure if it's the same grant codes?}
+and the EPSRC and the BBC for their funding contribution to this work via grants EP/K503782/1, EP/H500154/1, and EP/M017133/1.
 
 \balance{} 
 
