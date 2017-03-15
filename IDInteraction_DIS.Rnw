@@ -13,14 +13,13 @@
 % Paper metadata (use plain text, for PDF inclusion and later
 % re-using, if desired).  Use \emtpyauthor when submitting for review
 % so you remain anonymous.
-\def\plaintitle{SIGCHI Extended Abstracts Sample File: Note Initial
-  Caps} \def\plainauthor{First Author, Second Author, Third Author,
-  Fourth Author, Fifth Author, Sixth Author}
+\def\plaintitle{How should we train a tool to recognise behaviour?}
+\def\plainauthor{David Mawdsley, Aitor Apaolaza, Robert Haines, Caroline Jay}
 \def\emptyauthor{}
 \def\plainkeywords{Behavioural coding; object tracking; visual attention; reproducible methods}
 \def\plaingeneralterms{Documentation, Standardization}
 
-\title{How should we train a tool to recognise behaviour?}
+\title{\plaintitle}
 
 \numberofauthors{4}
 % Notice how author names are alternately typesetted to appear ordered
