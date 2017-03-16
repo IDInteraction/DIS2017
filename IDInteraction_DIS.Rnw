@@ -74,8 +74,7 @@
 \RaggedRight{}
 
 \begin{abstract}
-  %UPDATED---\today. This sample paper describes the formatting
-  Recognising, understanding and predicting human behaviour is a core goal of HCI. Video offers a rich source of information about behaviour, but coding this has traditionally been a laborious manual process. Here we describe training a system to automatically recognise when a user switches attention from a TV to a tablet, comparing two approaches. The results show that training with frames picked at random produces significantly quicker and more accurate behaviour recognition than training with consecutive frames from the start of the video.
+  Recognising, understanding and predicting human behaviour is a core goal of HCI. Video offers a rich source of information about behaviour, but coding this has traditionally been a laborious manual process. Here we describe the experimental training of a system to automatically recognise when a user switches attention from a TV to a tablet, comparing two approaches. The results show that training with frames picked at random produces significantly quicker and more accurate behaviour recognition than training with consecutive frames from the start of the video. We invite readers to check and extend the analysis in our paper, which is written using Knitr, by reproducing it from source, and varying the analysis parameters used.
 \end{abstract}
 
 
