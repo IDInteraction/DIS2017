@@ -422,7 +422,7 @@ Both methods of extracting scene features from the video frames gave an accuracy
 \subsection{Acknowledgements}
 We would like to thank the participants who took part in this experiment,
 %. We would like to thank
-and the EPSRC and the BBC for their funding contribution to this work via grants EP/K503782/1, EP/H500154/1, and EP/M017133/1.
+and the EPSRC and the BBC for their funding contribution to this work via grant EP/M017133/1.
 
 \balance{}
 
