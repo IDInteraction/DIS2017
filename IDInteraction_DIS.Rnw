@@ -71,7 +71,7 @@
 
 % Uncomment to disable hyphenation (not recommended)
 % https://twitter.com/anjirokhan/status/546046683331973120
-\RaggedRight{} 
+\RaggedRight{}
 
 \begin{abstract}
   %UPDATED---\today. This sample paper describes the formatting
@@ -88,7 +88,7 @@
 
 \section{Introduction}
 
-In a previous paper \cite{Apaolaza2016} we showed how object tracking could be used to classify participants' behaviour. This can reduce the need for manual coding of behaviours in videos.  We used object tracking to follow participants' movements throughout the entire video, and used ground truth measurements from the initial part of the video to train a classifier. The classifier's predictions were then compared to the ground truth for the remainder of the video to evaluate its performance.  In this paper we show that an alternative approach to training the classifier, where training frames are selected at random, rather than sequentially, substantially improves the performance of the technique. We also compare the performance of object tracking (as used in \cite{Apaolaza2016}) to face detection.   We focus on reproducibility in our work; this paper is written as a dynamic document in Knitr \cite{Knitr}, allowing others to verify, extend and modify our work.
+In a previous paper~\cite{Apaolaza2016} we showed how object tracking could be used to classify participants' behaviour. This can reduce the need for manual coding of behaviours in videos.  We used object tracking to follow participants' movements throughout the entire video, and used ground truth measurements from the initial part of the video to train a classifier. The classifier's predictions were then compared to the ground truth for the remainder of the video to evaluate its performance.  In this paper we show that an alternative approach to training the classifier, where training frames are selected at random, rather than sequentially, substantially improves the performance of the technique. We also compare the performance of object tracking (as used in~\cite{Apaolaza2016}) to face detection.   We focus on reproducibility in our work; this paper is written as a dynamic document in Knitr~\cite{Knitr}, allowing others to verify, extend and modify our work.
 <<setup, cache = FALSE, echo = FALSE, message=FALSE>>=
 library(knitr)
 library(tidyverse)
@@ -111,14 +111,14 @@ system2("./writeParticipantCodes.sh")
 
 
 <<echo = FALSE>>=
-participantCode <- read.csv("participantcodes.csv", header = FALSE, stringsAsFactors = FALSE, 
-                            col.names = "participantCode") 
+participantCode <- read.csv("participantcodes.csv", header = FALSE, stringsAsFactors = FALSE,
+                            col.names = "participantCode")
 numparticipants <- nrow(participantCode)
 #unlink("participantcodes.csv")
 
 if (numparticipants == 0 ) {
   "Stop - no participants found.  Check groundtruth folder contains data"
-  
+
 }
 @
 
@@ -138,36 +138,36 @@ fps <- 30
 getFrame <- function(participantCode, experimentpart, event){
 
   # Get the frame number that an experiemnt part start/ends at
-  part <- stringr::str_match(experimentpart, "\\d+")  
+  part <- stringr::str_match(experimentpart, "\\d+")
   if (is.na(part)) {
     stop("Experiment part could not be extracted")
   }
-  
+
   eventstring <- paste0(event, part)
   outputname <- tempfile()
-  
+
   sysargs <- c(paste0("--attentionfile=", "./Attention/", participantCode, "_attention.txt"),
                paste0("--outputfile=", outputname),
                paste0("--participant=", participantCode),
                paste0("--event=", eventstring),
                paste0("--externaleventfile=./Attention/transitionAnnotations.csv")
                )
-  
+
   system2("abc-display-tool/abc-extractAttention.py",
           args = sysargs,
           stdout = NULL
           )
-  
+
   results <- read.csv(outputname)
-  
+
   if (nrow(results) != 1) {
     stop("Error reading results frame")
   }
-  
+
   outframe <- results[1, "frame"]
-  
+
   unlink(outputname)
-  
+
   return(outframe)
 }
 
@@ -183,16 +183,16 @@ for (p in participantCode$participantCode) {
     partend <- getFrame(p, partstring, "end")
     partstart <-  getFrame(p, partstring, "start")
     partlength  <- partend - partstart
-    thisrow <- data.frame(participantCode = p, 
+    thisrow <- data.frame(participantCode = p,
                           part = part,
                           partstart = partstart,
                           partend = partend,
                           partlength = partlength,
                           length = partlength/fps)
-    
+
     experimentlengths <- rbind(experimentlengths, thisrow)
-  } 
-  
+  }
+
 }
 experimentlengths$part <- as.factor(experimentlengths$part)
 @
@@ -219,14 +219,14 @@ ggsave("figures/exptTime.pdf", plot = exptTimeFig, device = "pdf", width = 8, he
   \end{minipage}
 \end{marginfigure}
 
-30 participants took part in a ``spot the difference'' experiment.  Each participant was given a tablet, positioned in front of a TV screen.   Their task was to spot the differences between a series of images shown simultaneously on the tablet and TV screen.  We captured front, side and top-down video, as shown in Figure \ref{fig:setup}.   We also positioned Microsoft Kinects (v2) in front of, and to the side of, the participant.  All video sources were recorded at \Sexpr{fps} frames per second. Participants also wore a Metawear movement sensor \cite{Metawear} on each wrist, which captured acceleration and angular rotation rates at $\sim 25$ fps.
+30 participants took part in a ``spot the difference'' experiment.  Each participant was given a tablet, positioned in front of a TV screen.   Their task was to spot the differences between a series of images shown simultaneously on the tablet and TV screen.  We captured front, side and top-down video, as shown in Figure~\ref{fig:setup}.   We also positioned Microsoft Kinects (v2) in front of, and to the side of, the participant.  All video sources were recorded at \Sexpr{fps} frames per second. Participants also wore a Metawear movement sensor~\cite{Metawear} on each wrist, which captured acceleration and angular rotation rates at $\sim 25$ fps.
 
-The experiment started with an accommodation interval, followed by the main observation in two parts. Throughout the experiment, the participants carried out the same task of spotting differences between the image shown on the tablet and the one shown on the TV. During the first part of the main observation, participants were instructed to leave the tablet %fixed 
-on the table during 
-%the execution of 
+The experiment started with an accommodation interval, followed by the main observation in two parts. Throughout the experiment, the participants carried out the same task of spotting differences between the image shown on the tablet and the one shown on the TV. During the first part of the main observation, participants were instructed to leave the tablet %fixed
+on the table during
+%the execution of
 the task. During the accommodation interval and the second part, participants were free to either pick up the tablet or leave it on the table.
 
-The accommodation interval lasted for a minute and the captured data was discarded from the analysis. Each part of the main experiment lasted for 2.5 minutes. These timings were not strict; once the time limit was reached, the system would wait for the participant to request the next image to indicate the end of that segment. Figure \ref{fig:exptTime} shows the distribution of times spent on each part of the experiment. Occasionally the experimenter would instruct the participants to request the next image, to prevent unusually long observations.
+The accommodation interval lasted for a minute and the captured data was discarded from the analysis. Each part of the main experiment lasted for 2.5 minutes. These timings were not strict; once the time limit was reached, the system would wait for the participant to request the next image to indicate the end of that segment. Figure~\ref{fig:exptTime} shows the distribution of times spent on each part of the experiment. Occasionally the experimenter would instruct the participants to request the next image, to prevent unusually long observations.
 
 % We calculate the results before we discuss them, so that they exist in time for the results figure float
 <<experimentVars, echo = FALSE>>=
@@ -267,18 +267,18 @@ for (i in 1:nrow(configurations)) {
   } else if (configurations[i, "tracker"] == "cppMT") {
     trackerfn <- paste0(configurations[i, "participantCode"], "_",
                 paste0(configurations[i,"experimentpart"], "_front_cppMT.csv.gz"))
-  } else {  
+  } else {
     stop(paste(configurations[i, "tracker"], "filename formula not yet implemented"))
   }
-  
-  groundtruthpfn <- paste0("Groundtruth/", 
+
+  groundtruthpfn <- paste0("Groundtruth/",
                            configurations[i, "participantCode"], "_groundtruth.csv")
-  
+
   # Use abc-extractAttention to get start/end frame of each experiement
   startframe <- getFrame(configurations[i,"participantCode"], configurations[i,"experimentpart"], "start")
   endframe <- getFrame(configurations[i,"participantCode"], configurations[i,"experimentpart"], "end")
-  
-  
+
+
   runargs <- c(paste0("--trackerfile=", "Tracking/", trackerfn),
             paste0("--startframe=", startframe),
             paste0("--endframe=", endframe),
@@ -290,7 +290,7 @@ for (i in 1:nrow(configurations)) {
             paste0("--externaltrainingframes=", configurations[i,"frames"]),
             paste0("--rngstate=RNGstate")
             )
-  
+
   system2("abc-display-tool/abc-classify.py",
           args = runargs,
           stdout = NULL
@@ -311,7 +311,7 @@ for (i in 1:nrow(configurations)) {
   if (nrow(results) > 1) {
     stop(paste("Something went wrong for ", configurations[i,]))
   }
-  resultsframe <- rbind(resultsframe, 
+  resultsframe <- rbind(resultsframe,
                         data.frame(c(configurations[i,],  results)))
   unlink(runoutput)
 }
@@ -321,9 +321,9 @@ for (i in 1:nrow(configurations)) {
 <<echo=FALSE>>=
 resultsframe <- as_tibble(resultsframe)
 write.csv(resultsframe, file=paste0("results", Sys.Date(), ".csv"))
-resultsmean <- resultsframe %>% group_by(config, frames, tracker, experimentpart) %>% 
+resultsmean <- resultsframe %>% group_by(config, frames, tracker, experimentpart) %>%
                     summarise(avgxval = mean(crossvalAccuracy),
-                    avggt = mean(groundtruthAccuracy), 
+                    avggt = mean(groundtruthAccuracy),
                     datapts = length(groundtruthAccuracy))
 if (all(resultsmean$datapts > numparticipants)) {
   stop("Multiple experimental configs being grouped")
@@ -340,7 +340,7 @@ conflevs <- ifelse(conflevs == "noshuffle", "sequential", conflevs)
 levels(resultsmean$config) <- conflevs
 
 resultsmean <- resultsmean %>% rename(training = config)
-accuracyfigure <- ggplot(data = resultsmean, aes(x = frames, y = avggt, colour = training)) + geom_line() + geom_line(aes(y = avgxval), linetype = 2) +   facet_wrap( experimentpart ~ tracker, ncol = 1) + xlab("training frames") + 
+accuracyfigure <- ggplot(data = resultsmean, aes(x = frames, y = avggt, colour = training)) + geom_line() + geom_line(aes(y = avgxval), linetype = 2) +   facet_wrap( experimentpart ~ tracker, ncol = 1) + xlab("training frames") +
   ylab("mean accuracy") + theme(legend.position = "bottom")
 # We save the figure here - it gets pulled into the document later
 ggsave("figures/accuracy.pdf", plot = accuracyfigure, device = "pdf", width = 10, height = 26, units = "cm")
@@ -348,17 +348,17 @@ ggsave("figures/accuracy.pdf", plot = accuracyfigure, device = "pdf", width = 10
 @
 
 
-For \Sexpr{numparticipants} of the participants\footnote{Work to encode the remaining participants is ongoing.}, the webcam video was manually encoded using \texttt{ELAN}~\cite{ELAN} to produce ground-truth data for each participant: each change in attention was annotated, taking into account the transition period between the attention foci. Participants' attention towards the tablet, TV and elsewhere was recorded (we combined the last two states in this analysis to consider only ``tablet'' and ``not tablet'' as possible behaviours).  We encoded frames before the mid-point of each transition period to the original state, and the remaining frames to the new state. 
+For \Sexpr{numparticipants} of the participants\footnote{Work to encode the remaining participants is ongoing.}, the webcam video was manually encoded using \texttt{ELAN}~\cite{ELAN} to produce ground-truth data for each participant: each change in attention was annotated, taking into account the transition period between the attention foci. Participants' attention towards the tablet, TV and elsewhere was recorded (we combined the last two states in this analysis to consider only ``tablet'' and ``not tablet'' as possible behaviours).  We encoded frames before the mid-point of each transition period to the original state, and the remaining frames to the new state.
 
 We took video from the front-facing webcam (recorded at 544x418 resolution) and applied object tracking and face detection algorithms to it. We used \texttt{OpenFace}~\cite{Baltrusaitis2016} to track facial position, gaze and pose.  We ran \texttt{OpenFace} on the whole video for each participant, and then extracted the tracking data corresponding to each part of the experiment.  In common with our previous work, we used \texttt{CppMT}~\cite{Nebehay2015CVPR} to perform object tracking on the video of each participant.  We had previously found that the object bounding box could be prone to ``drift''; particularly if the participant's face became obscured (for example, by turning away from the camera).  For this reason, we (re)set the bounding box at the start of each part of the experiment.
 
 We analysed parts 1 and 2 of the experiment separately.  We hypothesised that part 2 would prove more challenging for our approach; reviewing the videos we noted that participants would change the position of the tablet, and in some cases partially obscured their face with the tablet.
 
 
-We developed a Python program to perform the classification process.  This could operate in a non-interactive mode, where an external ground truth file was used to train and evaluate the classifier.  When used in interactive mode, the user was presented with random frames from the video, which they could then classify.   An ``undo'' feature was provided.  It was sometimes difficult to dertermin a participants behaviour if they were moving rapidly, so we added a feature that allowed the user to review the frames at $\pm 3$ from the frame being classified.  
+We developed a Python program to perform the classification process.  This could operate in a non-interactive mode, where an external ground truth file was used to train and evaluate the classifier.  When used in interactive mode, the user was presented with random frames from the video, which they could then classify.   An ``undo'' feature was provided.  It was sometimes difficult to dertermin a participants behaviour if they were moving rapidly, so we added a feature that allowed the user to review the frames at $\pm 3$ from the frame being classified.
 
 \subsection{Evaluation of the classifier}
-When the classifier is operating in non-interactive mode, we know the ground-truth state for each frame, which we can use to evaluate the classifier's performance.  When using the classifier ``for real'', in interactive mode ground truth data will not be available. When training from a random sample of frames, we can exploit the randomness of the sample to estimate the classifier accuracy using a shuffle split cross validation approach.  This takes a randomly selected 50\% of the frames as hold-back, fits the classifier on the remaining frames, and calculates the accuracy. We report the mean of 1000 such evaluations. We cannot use this approach when classifying frames sequentially, since our training data are not a random sample of the video's frames. %When running in interactive mode the user can also visually assess the classifier's performance by replaying the video, with a rectangle, whose colour indicates the predicted behaviour, overlaid on each frame.   
+When the classifier is operating in non-interactive mode, we know the ground-truth state for each frame, which we can use to evaluate the classifier's performance.  When using the classifier ``for real'', in interactive mode ground truth data will not be available. When training from a random sample of frames, we can exploit the randomness of the sample to estimate the classifier accuracy using a shuffle split cross validation approach.  This takes a randomly selected 50\% of the frames as hold-back, fits the classifier on the remaining frames, and calculates the accuracy. We report the mean of 1000 such evaluations. We cannot use this approach when classifying frames sequentially, since our training data are not a random sample of the video's frames. %When running in interactive mode the user can also visually assess the classifier's performance by replaying the video, with a rectangle, whose colour indicates the predicted behaviour, overlaid on each frame.
 
 %% This is the results figure
 \begin{marginfigure}[-12pc]
@@ -376,11 +376,11 @@ The \texttt{DecisionTreeClassifier} in \texttt{sklearn}~\cite{scikit-learn} was 
 	\item Sequential training frames; $t \in \{ \Sexpr{seqtimes} \}$ seconds
 	\item Random training frames; $f \in \{ \Sexpr{randframes} \}$ frames
 \end{enumerate}
-When training sequentially we used the ground truth data for the first $t$ seconds of each part of the experiment.  
+When training sequentially we used the ground truth data for the first $t$ seconds of each part of the experiment.
 
 \section{Results}
 <<chooseplotpart, echo=FALSE>>=
-#The experiment part and tracker to plot 
+#The experiment part and tracker to plot
 plotpart = "part1"
 plottracker = "openface"
 
@@ -390,41 +390,41 @@ trackerstring <- ifelse(plottracker == "openface", "OpenFace", plottracker)
 trackerstring <- ifelse(plottracker == "cppMT", "CppMT", plottracker)
 @
 
-For each participant and experiment part we trained the classifier for the specified number of frames using either the sequential or randomised training approach.  The accuracy of the classifier was evaluated against ground truth data for all remaining frames. Figure~\ref{fig:resultsfig} shows the average accuracy for each part of the experiment and each tracking method. In practice, ground truth data would be usually be unavailable for frames that had not yet been classified.  We also calculated, for the random sampling process, the classifier's estimated accuracy using the cross validation approach. Figure~\ref{fig:participantFig} shows the results for each participant for \Sexpr{plotstring} of the experiment using \Sexpr{trackerstring}.    
+For each participant and experiment part we trained the classifier for the specified number of frames using either the sequential or randomised training approach.  The accuracy of the classifier was evaluated against ground truth data for all remaining frames. Figure~\ref{fig:resultsfig} shows the average accuracy for each part of the experiment and each tracking method. In practice, ground truth data would be usually be unavailable for frames that had not yet been classified.  We also calculated, for the random sampling process, the classifier's estimated accuracy using the cross validation approach. Figure~\ref{fig:participantFig} shows the results for each participant for \Sexpr{plotstring} of the experiment using \Sexpr{trackerstring}.
 
 <<participantFig, echo=FALSE, width='1.3\\columnwidth', fig.cap="Classification accuracy with randomised training frames for each participant.  The red line, and associated 95\\% confidence interval, indicate the estimated accuracy using the cross validation approach described in the main text.  The blue line shows the estimated accuracy using the ground truth for the remaining frames.">>=
 participantplot <- ggplot(data = resultsframe[resultsframe$tracker == plottracker &
                                                 resultsframe$experimentpart == plotpart &
                                                 resultsframe$config == "shuffle",],
-                          aes(x = frames, y = crossvalAccuracy, colour = config)) + 
-  geom_ribbon(aes(ymin = crossvalAccuracyLB, ymax = crossvalAccuracyUB), alpha = 0.4, colour = NA) + 
+                          aes(x = frames, y = crossvalAccuracy, colour = config)) +
+  geom_ribbon(aes(ymin = crossvalAccuracyLB, ymax = crossvalAccuracyUB), alpha = 0.4, colour = NA) +
   geom_line() + geom_line(aes(y = groundtruthAccuracy), colour = "blue") +
   facet_wrap(~ participantCode) + xlab("training frames") + ylab("accuracy") + theme(legend.position = "none") +
-  ggtitle(paste("Participant accuracy,", plottracker, ",", plotpart)) 
+  ggtitle(paste("Participant accuracy,", plottracker, ",", plotpart))
 print(participantplot)
 @
 
 \section{Reproducible research}
-We use Docker containers to run CppMT and OpenFace on each of participant's video, as described in \cite{Apaolaza2016}.   We extend the idea of reproducibility to this paper, which is written using Knitr~\cite{Knitr}.  This allows us to interleave R and \LaTeX~code.   For example, if we decide to evaluate a different number of training frames, we simply alter the values in our \texttt{randframes} array, and re-``knit'' the document.  This calls the Python code to evaluate the performance of the classifier with the new values, updates the figures that depend on these values, and updates this paper with the new data and figures.  The Knitr source of this document, the ground truth files, and links to the outputs from CppMT and OpenFace are available \cite{thepaper}. From these it is possible to recreate this abstract, and vary the analysis parameters used.\footnote{We are unable to make the source videos available owing to participant confidentiality.}
+We use Docker containers to run CppMT and OpenFace on each of participant's video, as described in~\cite{Apaolaza2016}.   We extend the idea of reproducibility to this paper, which is written using Knitr~\cite{Knitr}.  This allows us to interleave R and \LaTeX~code.   For example, if we decide to evaluate a different number of training frames, we simply alter the values in our \texttt{randframes} array, and re-``knit'' the document.  This calls the Python code to evaluate the performance of the classifier with the new values, updates the figures that depend on these values, and updates this paper with the new data and figures.  The Knitr source of this document, the ground truth files, and links to the outputs from CppMT and OpenFace are available~\cite{thepaper}. From these it is possible to recreate this abstract, and vary the analysis parameters used.\footnote{We are unable to make the source videos available owing to participant confidentiality.}
 
 \section{Discussion \& Further Work}
 
-We have shown that selecting training frames at random dramatically improves the performance of our approach.  When training the classifier sequentially, the position of each feature is, in general, closely correlated with the previous frame.  As such each additional frame gives us relatively little new information.  Furthermore, the classifier is unlikely to be robust to changes in the participant's behaviour over the course of the experiment (for example if they change the position of the tablet) 
- 
-Although it was straightforward to classify the majority of frames when working in interactive mode, frames where the participant was transitioning between states were sometimes difficult to classify.  We plan to do further work exploring how best to handle these frames; it may be more appropriate to consider ``transition'' as a separate state. %whether it is better to treat ``transition between states'' as a separate state, or whether we should consistently include transition frames in one or other of the states.  
+We have shown that selecting training frames at random dramatically improves the performance of our approach.  When training the classifier sequentially, the position of each feature is, in general, closely correlated with the previous frame.  As such each additional frame gives us relatively little new information.  Furthermore, the classifier is unlikely to be robust to changes in the participant's behaviour over the course of the experiment (for example if they change the position of the tablet)
+
+Although it was straightforward to classify the majority of frames when working in interactive mode, frames where the participant was transitioning between states were sometimes difficult to classify.  We plan to do further work exploring how best to handle these frames; it may be more appropriate to consider ``transition'' as a separate state. %whether it is better to treat ``transition between states'' as a separate state, or whether we should consistently include transition frames in one or other of the states.
 We also plan to investigate using the remaining sensor data (e.g.\ the sensor and Kinect data) to improve the accuracy of our predictions.
 
-Both methods of extracting scene features from the video frames gave an accuracy that was, on average, similar across all participants.  This masks some marked differences in performance for individual participants. 
+Both methods of extracting scene features from the video frames gave an accuracy that was, on average, similar across all participants.  This masks some marked differences in performance for individual participants.
 \texttt{OpenFace} is less general; it only detects faces, but has the advantage that it operates completely automatically, whereas a user specified bounding box is required for \texttt{CppMT}.  We note that the ``tracking'' and ``classification'' parts of our approach are distinct, and that other, domain specified, ``tracking'' approaches may generate appropriate data for the classifier.
- 
+
 
 
 \subsection{Acknowledgements}
 We would like to thank the participants who took part in this experiment,
-%. We would like to thank 
+%. We would like to thank
 and the EPSRC and the BBC for their funding contribution to this work via grants EP/K503782/1, EP/H500154/1, and EP/M017133/1.
 
-\balance{} 
+\balance{}
 
 \bibliographystyle{SIGCHI-Reference-Format}
 \bibliography{DISbib}
