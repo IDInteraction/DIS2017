@@ -9,15 +9,15 @@ These are unlikely to be installed by default:
 
 * A functioning LaTeX system, with the `texlive-fonts-extra` package installed
 * R, including tidyverse. Tidyverse requires the following packages, that may not be installed by default:
- * libcurl4-openssl-dev
- * libssl
- * libxml2-dev
+  * libcurl4-openssl-dev
+  * libssl
+  * libxml2-dev
 * Python 2.7. The following packages are also required:
- * sklearn (pip install sklearn (0.18.1))
- * NumPy (1.11.0)
- * SciPy (0.18.1)
- * Pandas (0.17.1)
- * OpenCV (2.4.9.1) If installing OpenCV with pip the package is `opencv-python`
+  * sklearn (pip install sklearn (0.18.1))
+  * NumPy (1.11.0)
+  * SciPy (0.18.1)
+  * Pandas (0.17.1)
+  * OpenCV (2.4.9.1) If installing OpenCV with pip the package is `opencv-python`
 
 ### Source code
 
