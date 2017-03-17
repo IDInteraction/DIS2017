@@ -1,4 +1,4 @@
-# How should we train a tool to recognise behaviour?
+# How should we train a tool to recognise behaviour from video?
 ## David Mawdsley, Aitor Apaolaza, Robert Haines, Caroline Jay
 
 *TODO: Write up fully*
