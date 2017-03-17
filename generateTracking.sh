@@ -19,7 +19,9 @@ for a in 1 2; do
 mkdir cppMTPart${a}
 # Generate frame skip times
 for p in $participants; do
-	./abc-display-tool/abc-extractAttention.py --attentionfile Attention/${p}_attention.txt --participant $p --externaleventfile Attention/transitionAnnotations.csv --event start${a} --skipfile  cppMTPart${a}/${p}_front.skip;
+	if [ ! -f cppMTPart${a}/${p}_front.skip ]; then
+		./abc-display-tool/abc-extractAttention.py --attentionfile Attention/${p}_attention.txt --participant $p --externaleventfile Attention/transitionAnnotations.csv --event start${a} --skipfile  cppMTPart${a}/${p}_front.skip;
+	fi
 
 done;
 # Initalise tracking for these participants
