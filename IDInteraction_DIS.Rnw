@@ -14,10 +14,10 @@
 % re-using, if desired).  Use \emtpyauthor when submitting for review
 % so you remain anonymous.
 \def\plaintitle{How should we train a tool to recognise behaviour?}
-\def\plainauthor{David Mawdsley, Aitor Apaolaza, Robert Haines, Caroline Jay}
+\def\plainauthor{}%David Mawdsley, Aitor Apaolaza, Robert Haines, Caroline Jay}
 \def\emptyauthor{}
 \def\plainkeywords{Behavioural coding; object tracking; visual attention; reproducible methods}
-\def\plaingeneralterms{Documentation, Standardization}
+\def\plaingeneralterms{}
 
 \title{\plaintitle}
 
@@ -26,15 +26,15 @@
 % in 2-column format; i.e., the first 4 autors on the first column and
 % the other 4 auhors on the second column. Actually, it's up to you to
 % strictly adhere to this author notation.
-\author{%
-  \alignauthor{%
-    \textbf{David Mawdsley}\\
-    \textbf{Aitor Apaolaza}\\
-     \textbf{Robert Haines}\\
-     \textbf{Caroline Jay}\\
-    \affaddr{University of Manchester, UK}\\
-    \email{[david.mawdsley, aitor.apaolaza, robert.haines, caroline.jay] @ manchester.ac.uk} }\alignauthor{
-} }
+%\author{%
+%  \alignauthor{%
+%    \textbf{David Mawdsley}\\
+%    \textbf{Aitor Apaolaza}\\
+%     \textbf{Robert Haines}\\
+%     \textbf{Caroline Jay}\\
+%    \affaddr{University of Manchester, UK}\\
+%    \email{[david.mawdsley, aitor.apaolaza, robert.haines, caroline.jay] @ manchester.ac.uk} }\alignauthor{
+%} }
 
 % Make sure hyperref comes last of your loaded packages, to give it a
 % fighting chance of not being over-written, since its job is to
