@@ -358,7 +358,7 @@ We analysed parts 1 and 2 of the experiment separately.  We hypothesised that pa
 We developed a Python program to perform the classification process.  This could operate in a non-interactive mode, where an external ground truth file was used to train and evaluate the classifier.  When used in interactive mode, the user was presented with random frames from the video, which they could then classify.   An ``undo'' feature was provided.  It was sometimes difficult to determine a participant's behaviour if they were moving rapidly, so we added a feature that allowed the user to review the frames at $\pm 3$ from the frame being classified.
 
 \subsection{Evaluation of the classifier}
-When the classifier is operating in non-interactive mode, we know the ground-truth state for each frame, which we can use to evaluate the classifier's performance.  When using the classifier ``for real'', in interactive mode ground truth data will not be available. When training from a random sample of frames, we can exploit the randomness of the sample to estimate the classifier accuracy using a shuffle split cross validation approach.  This takes a randomly selected 50\% of the frames as hold-back, fits the classifier on the remaining frames, and calculates the accuracy. We report the mean of 1000 such evaluations. We cannot use this approach when classifying frames sequentially, since our training data are not a random sample of the video's frames. %When running in interactive mode the user can also visually assess the classifier's performance by replaying the video, with a rectangle, whose colour indicates the predicted behaviour, overlaid on each frame.
+When the classifier is operating in non-interactive mode, we know the ground-truth state for each frame, which we can use to evaluate the classifier's performance.  When using the classifier ``for real'' ground truth data will not be available. When training from a random sample of frames we can estimate the classifier accuracy using a shuffle split cross validation approach.  This takes a randomly selected 50\% of the frames as hold-back, fits the classifier on the remaining frames, and calculates the accuracy. We report the mean of 1000 such evaluations. We cannot use this approach when classifying frames sequentially, since our training data are not a random sample of the video's frames. %When running in interactive mode the user can also visually assess the classifier's performance by replaying the video, with a rectangle, whose colour indicates the predicted behaviour, overlaid on each frame.
 
 %% This is the results figure
 \begin{marginfigure}[-12pc]
@@ -375,7 +375,7 @@ The \texttt{DecisionTreeClassifier} in \texttt{sklearn}~\cite{scikit-learn} was 
 \begin{enumerate}[topsep=2pt]\compresslist
 	\item Sequential training frames; $t \in \{ \Sexpr{seqtimes} \}$ seconds
 	\item Random training frames; $f \in \{ \Sexpr{randframes} \}$ frames
-\end{enumerate}
+\end{enumerate}\vspace*{-\baselineskip}
 When training sequentially we used the ground truth data for the first $t$ seconds of each part of the experiment.
 
 \section{Results}
@@ -405,7 +405,7 @@ print(participantplot)
 @
 
 \section{Reproducible research}
-We use Docker containers to run CppMT and OpenFace on each of participant's video, as described in~\cite{Apaolaza2016}.   We extend the idea of reproducibility to this paper, which is written using Knitr~\cite{Knitr}.  This allows us to interleave R and \LaTeX~code.   For example, if we decide to evaluate a different number of training frames, we simply alter the values in our \texttt{randframes} array, and re-``knit'' the document.  This calls the Python code to evaluate the performance of the classifier with the new values, updates the figures that depend on these values, and updates this paper with the new data and figures.  The Knitr source of this document, the ground truth files, and links to the outputs from CppMT and OpenFace are available~\cite{thepaper}. From these it is possible to recreate this abstract, and vary the analysis parameters used.\footnote{We are unable to make the source videos available owing to participant confidentiality.}
+We use Docker containers to run CppMT and OpenFace on each of participant's video, as described in~\cite{Apaolaza2016}.   We extend the idea of reproducibility to this paper, which is written using Knitr~\cite{Knitr}.  This allows us to interleave R and \LaTeX~code.   For example, if we decide to evaluate a different number of training frames, we simply alter the values in our \texttt{randframes} array, and re-``knit'' the document.  This calls the classifier code with the new values  and updates the paper with the new data and figures.  The Knitr source of this document, the ground truth files, and links to the outputs from CppMT and OpenFace are available~\cite{thepaper}. From these it is possible to recreate this abstract, and vary the analysis parameters used.\footnote{We are unable to make the source videos available owing to participant confidentiality.}
 
 \section{Discussion \& Further Work}
 
