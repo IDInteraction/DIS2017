@@ -13,7 +13,7 @@
 % Paper metadata (use plain text, for PDF inclusion and later
 % re-using, if desired).  Use \emtpyauthor when submitting for review
 % so you remain anonymous.
-\def\plaintitle{How should we train a tool to recognise behaviour?}
+\def\plaintitle{How Should we Train a Tool to Recognise Behaviour From Video?}
 \def\plainauthor{}%David Mawdsley, Aitor Apaolaza, Robert Haines, Caroline Jay}
 \def\emptyauthor{}
 \def\plainkeywords{Behavioural coding; object tracking; visual attention; reproducible methods}
@@ -219,7 +219,7 @@ ggsave("figures/exptTime.pdf", plot = exptTimeFig, device = "pdf", width = 8, he
   \end{minipage}
 \end{marginfigure}
 
-30 participants took part in a ``spot the difference'' experiment.  Each participant was given a tablet, positioned in front of a TV screen.   Their task was to spot the differences between a series of images shown simultaneously on the tablet and TV screen.  We captured front, side and top-down video, as shown in Figure~\ref{fig:setup}.   We also positioned Microsoft Kinects (v2) in front of, and to the side of, the participant.  All video sources were recorded at \Sexpr{fps} frames per second. Participants also wore a Metawear movement sensor~\cite{Metawear} on each wrist, which captured acceleration and angular rotation rates at $\sim 25$ fps.
+30 participants took part in a ``spot the difference'' experiment.  Each participant was given a tablet, positioned in front of a TV screen.   Their task was to spot the differences between a series of images shown simultaneously on the tablet and TV screen.  We captured front, side and top-down video, as shown in Figure~\ref{fig:setup}.   We also positioned Microsoft Kinects (v2) in front of, and to the side of, the participant.  All video sources were recorded at \Sexpr{fps} frames per second. Participants also wore a Metawear movement sensor~\cite{Metawear} on each wrist, which captured acceleration and angular rotation rates at $\sim$ 25 frames per second.
 
 The experiment started with an accommodation interval, followed by the main observation in two parts. Throughout the experiment, the participants carried out the same task of spotting differences between the image shown on the tablet and the one shown on the TV. During the first part of the main observation, participants were instructed to leave the tablet %fixed
 on the table during
@@ -350,7 +350,7 @@ ggsave("figures/accuracy.pdf", plot = accuracyfigure, device = "pdf", width = 10
 
 For \Sexpr{numparticipants} of the participants\footnote{Work to encode the remaining participants is ongoing.}, the webcam video was manually encoded using \texttt{ELAN}~\cite{ELAN} to produce ground-truth data for each participant: each change in attention was annotated, taking into account the transition period between the attention foci. Participants' attention towards the tablet, TV and elsewhere was recorded (we combined the last two states in this analysis to consider only ``tablet'' and ``not tablet'' as possible behaviours).  We encoded frames before the mid-point of each transition period to the original state, and the remaining frames to the new state.
 
-We took video from the front-facing webcam (recorded at 544x418 resolution) and applied object tracking and face detection algorithms to it. We used \texttt{OpenFace}~\cite{Baltrusaitis2016} to track facial position, gaze and pose.  We ran \texttt{OpenFace} on the whole video for each participant, and then extracted the tracking data corresponding to each part of the experiment.  In common with our previous work, we used \texttt{CppMT}~\cite{Nebehay2015CVPR} to perform object tracking on the video of each participant.  We had previously found that the object bounding box could be prone to ``drift''; particularly if the participant's face became obscured (for example, by turning away from the camera).  For this reason, we (re)set the bounding box at the start of each part of the experiment.
+We took video from the front-facing webcam (recorded at $544 \times 418$ resolution) and applied object tracking and face detection algorithms to it. We used \texttt{OpenFace}~\cite{Baltrusaitis2016} to track facial position, gaze and pose.  We ran \texttt{OpenFace} on the whole video for each participant, and then extracted the tracking data corresponding to each part of the experiment.  In common with our previous work, we used \texttt{CppMT}~\cite{Nebehay2015CVPR} to perform object tracking on the video of each participant.  We had previously found that the object bounding box could be prone to ``drift''; particularly if the participant's face became obscured (for example, by turning away from the camera).  For this reason, we (re)set the bounding box at the start of each part of the experiment.
 
 We analysed parts 1 and 2 of the experiment separately.  We hypothesised that part 2 would prove more challenging for our approach; reviewing the videos we noted that participants would change the position of the tablet, and in some cases partially obscured their face with the tablet.
 
@@ -405,7 +405,7 @@ print(participantplot)
 @
 
 \section{Reproducible research}
-We use Docker containers to run CppMT and OpenFace on each of participant's video, as described in~\cite{Apaolaza2016}.   We extend the idea of reproducibility to this paper, which is written using Knitr~\cite{Knitr}.  This allows us to interleave R and \LaTeX~code.   For example, if we decide to evaluate a different number of training frames, we simply alter the values in our \texttt{randframes} array, and re-``knit'' the document.  This calls the classifier code with the new values  and updates the paper with the new data and figures.  The Knitr source of this document, the ground truth files, and links to the outputs from CppMT and OpenFace are available~\cite{thepaper}. From these it is possible to recreate this abstract, and vary the analysis parameters used.\footnote{We are unable to make the source videos available owing to participant confidentiality.}
+We use Docker containers to run \texttt{CppMT} and \texttt{OpenFace} on each of participant's video, as described in~\cite{Apaolaza2016}.   We extend the idea of reproducibility to this paper, which is written using \texttt{Knitr}~\cite{Knitr}.  This allows us to interleave \texttt{R} and \LaTeX~code.   For example, if we decide to evaluate a different number of training frames, we simply alter the values in our \texttt{randframes} array, and re-``knit'' the document.  This calls the classifier code with the new values  and updates the paper with the new data and figures.  The \texttt{Knitr} source of this document \cite{thepaper}, the ground truth files, and the outputs from \texttt{CppMT} and \texttt{OpenFace} are available~\cite{thedata}. From these it is possible to recreate this abstract, and vary the analysis parameters used.\footnote{We are unable to make the source videos available owing to participant confidentiality.}
 
 \section{Discussion \& Further Work}
 
